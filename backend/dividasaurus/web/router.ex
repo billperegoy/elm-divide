@@ -8,5 +8,6 @@ defmodule Dividasaurus.Router do
   scope "/api/v1", Dividasaurus do
     pipe_through :api
     get "/users", UserController, :index
+    get "/tickets", TicketController, :index
   end
 end
