@@ -195,7 +195,10 @@ update msg model =
                 newTickets =
                     List.map (\ticket -> markTicketSelected ticket id model.myName) model.tickets
             in
-                { model | tickets = newTickets } ! []
+                { model | tickets = newTickets }
+                    ! [ Task.succeed NextUser
+                            |> Task.perform identity
+                      ]
 
 
 markTicketSelected : Ticket -> Int -> String -> Ticket
