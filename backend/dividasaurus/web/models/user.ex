@@ -1,3 +1,8 @@
 defmodule Dividasaurus.User do
-  defstruct [:id, :name, :role]
+  use Dividasaurus.Web, :model
+  schema "users" do
+    field :name, :string
+    field :role, :string
+    timestamps
+  end
 end
