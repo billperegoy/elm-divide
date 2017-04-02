@@ -8,6 +8,9 @@ import Task exposing (..)
 import Process exposing (..)
 import Date exposing (..)
 import Array exposing (..)
+import Json.Decode
+import Json.Decode.Pipeline
+import Http
 
 
 main : Program Never Model Msg
@@ -45,6 +48,14 @@ type alias Ticket =
     }
 
 
+type alias TicketResponse =
+    { id : Int
+    , date : String
+    , opponent : String
+    , time : String
+    }
+
+
 type Role
     = Unregistered
     | Free
@@ -65,6 +76,7 @@ type alias Model =
     , users : Array User
     , currentUser : Int
     , myName : String
+    , systemError : String
     }
 
 
@@ -77,16 +89,7 @@ nullUser =
 
 initTickets : List Ticket
 initTickets =
-    [ Ticket 0 "April 1" "Chicago" "7:10pm" Nothing
-    , Ticket 1 "April 2" "Chicago" "7:10pm" Nothing
-    , Ticket 2 "April 3" "Chicago" "1:05pm" Nothing
-    , Ticket 3 "April 5" "Baltimore" "7:10pm" (Just "Bill")
-    , Ticket 4 "April 6" "Baltimore" "7:10pm" Nothing
-    , Ticket 5 "April 7" "Baltimore" "7:10pm" (Just "Joe")
-    , Ticket 6 "April 8" "Toronto" "7:10pm" Nothing
-    , Ticket 7 "April 9" "Toronto" "7:10pm" Nothing
-    , Ticket 8 "April 10" "Toronto" "1:05pm" Nothing
-    ]
+    []
 
 
 myTurn : Model -> Bool
@@ -117,8 +120,9 @@ init =
     , users = initUsers
     , currentUser = 0
     , myName = "Bill"
+    , systemError = ""
     }
-        ! []
+        ! [ ticketsRequest ]
 
 
 
@@ -130,6 +134,7 @@ type Msg
     | DeleteFlashElement Int Time
     | NextUser
     | SelectTicket Int
+    | ProcessTicketRequest (Result Http.Error (List TicketResponse))
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -200,6 +205,26 @@ update msg model =
                             |> Task.perform identity
                       ]
 
+        ProcessTicketRequest (Ok response) ->
+            let
+                newTickets =
+                    List.map (\ticket -> transformTicketResponse ticket) response
+            in
+                { model | tickets = newTickets } ! []
+
+        ProcessTicketRequest (Err error) ->
+            { model | systemError = toString error |> String.slice 0 120 } ! []
+
+
+transformTicketResponse : TicketResponse -> Ticket
+transformTicketResponse response =
+    { id = response.id
+    , date = response.date
+    , opponent = response.opponent
+    , time = response.time
+    , owner = Nothing
+    }
+
 
 markTicketSelected : Ticket -> Int -> String -> Ticket
 markTicketSelected ticket id userName =
@@ -265,9 +290,19 @@ flashViewElements elements =
         elements
 
 
-header : Html Msg
-header =
-    div [ class "jumbotron text-center" ] [ h1 [] [ text "Dividasaurus" ] ]
+header : Model -> Html Msg
+header model =
+    let
+        errorAttributes =
+            if model.systemError == "" then
+                []
+            else
+                [ class "alert alert-danger" ]
+    in
+        div []
+            [ div [ class "jumbotron text-center" ] [ h1 [] [ text "Dividasaurus" ] ]
+            , div errorAttributes [ text model.systemError ]
+            ]
 
 
 ticketList : Bool -> List Ticket -> List (Html Msg)
@@ -343,13 +378,40 @@ view model =
             myTurn model
     in
         div [ class "container" ]
-            [ header
+            [ header model
             , div [ class "row" ]
                 [ flashView model
                 , remainingTickets model.tickets itsMyTurn
                 , myTickets model
                 ]
             ]
+
+
+
+-- Decoders
+
+
+ticketListDecoder : Json.Decode.Decoder (List TicketResponse)
+ticketListDecoder =
+    Json.Decode.list ticketDecoder
+
+
+ticketDecoder : Json.Decode.Decoder TicketResponse
+ticketDecoder =
+    Json.Decode.Pipeline.decode TicketResponse
+        |> Json.Decode.Pipeline.required "id" Json.Decode.int
+        |> Json.Decode.Pipeline.required "date" Json.Decode.string
+        |> Json.Decode.Pipeline.required "opponent" Json.Decode.string
+        |> Json.Decode.Pipeline.required "time" Json.Decode.string
+
+
+ticketsRequest : Cmd Msg
+ticketsRequest =
+    let
+        url =
+            "http://localhost:4000/api/v1/tickets"
+    in
+        Http.send ProcessTicketRequest (Http.get url ticketListDecoder)
 
 
 
