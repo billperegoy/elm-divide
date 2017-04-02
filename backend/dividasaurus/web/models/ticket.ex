@@ -5,5 +5,7 @@ defmodule Dividasaurus.Ticket do
     field :opponent, :string
     field :time, :string
     timestamps
+
+    #belongs_to :user, Dividasaurus.User
   end
 end
