@@ -318,7 +318,10 @@ singleTicket ticket myTurn =
         innerDiv =
             div [ class "panel panel-default" ]
                 [ div [ class "panel-body" ]
-                    [ text ticket.date ]
+                    [ div [] [ text ticket.date ]
+                    , div [] [ text ticket.opponent ]
+                    , div [] [ text ticket.time ]
+                    ]
                 ]
     in
         if myTurn then
