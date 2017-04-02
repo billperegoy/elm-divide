@@ -64,8 +64,8 @@ type Role
 
 
 type alias User =
-    { name : String
-    , role : Role
+    { id : Int
+    , name : String
     }
 
 
@@ -82,8 +82,8 @@ type alias Model =
 
 nullUser : User
 nullUser =
-    { name = "guest"
-    , role = Unregistered
+    { id = -1
+    , name = "guest"
     }
 
 
@@ -103,11 +103,11 @@ myTurn model =
 
 initUsers : Array User
 initUsers =
-    [ User "Joe" Paid
-    , User "Bill" Paid
-    , User "Kelly" Paid
-    , User "David" Paid
-    , User "John" Paid
+    [ User 0 "Joe"
+    , User 1 "Bill"
+    , User 2 "Kelly"
+    , User 3 "David"
+    , User 4 "John"
     ]
         |> Array.fromList
 
@@ -205,15 +205,19 @@ update msg model =
                             |> Task.perform identity
                       ]
 
-        ProcessTicketRequest (Ok response) ->
+        ProcessTicketRequest (Ok tickets) ->
             let
                 newTickets =
-                    List.map (\ticket -> transformTicketResponse ticket) response
+                    List.map transformTicketResponse tickets
             in
                 { model | tickets = newTickets } ! []
 
         ProcessTicketRequest (Err error) ->
-            { model | systemError = toString error |> String.slice 0 120 } ! []
+            let
+                errorString =
+                    error |> toString |> String.slice 0 120
+            in
+                { model | systemError = errorString } ! []
 
 
 transformTicketResponse : TicketResponse -> Ticket
@@ -406,6 +410,18 @@ ticketDecoder =
         |> Json.Decode.Pipeline.required "date" Json.Decode.string
         |> Json.Decode.Pipeline.required "opponent" Json.Decode.string
         |> Json.Decode.Pipeline.required "time" Json.Decode.string
+
+
+userDecoder : Json.Decode.Decoder User
+userDecoder =
+    Json.Decode.Pipeline.decode User
+        |> Json.Decode.Pipeline.required "id" Json.Decode.int
+        |> Json.Decode.Pipeline.required "name" Json.Decode.string
+
+
+
+-- FIXME - write a decoder to convert string to User union type
+--         call that in the above pipeline
 
 
 ticketsRequest : Cmd Msg
