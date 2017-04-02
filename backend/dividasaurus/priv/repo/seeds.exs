@@ -9,6 +9,9 @@ alias Dividasaurus.Ticket
 Repo.delete_all(User)
 Repo.insert! %User{ name: "Bill", role: "User" }
 Repo.insert! %User{ name: "Joe", role: "User" }
+Repo.insert! %User{ name: "John", role: "User" }
+Repo.insert! %User{ name: "Kelly", role: "User" }
+Repo.insert! %User{ name: "Dave", role: "User" }
 
 Repo.delete_all(Ticket)
 Repo.insert! %Ticket{ date: "April 3", opponent: "Pittsburgh", time: "2:05pm", user_id: nil }

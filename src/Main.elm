@@ -44,7 +44,7 @@ type alias Ticket =
     , date : String
     , opponent : String
     , time : String
-    , owner : Maybe String
+    , owner : Maybe Int
     }
 
 
@@ -54,13 +54,6 @@ type alias TicketResponse =
     , opponent : String
     , time : String
     }
-
-
-type Role
-    = Unregistered
-    | Free
-    | Paid
-    | Admin
 
 
 type alias User =
@@ -75,7 +68,8 @@ type alias Model =
     , nextId : Int
     , users : Array User
     , currentUser : Int
-    , myName : String
+    , myUserId : Int
+    , myUserName : String
     , systemError : String
     }
 
@@ -96,9 +90,15 @@ myTurn : Model -> Bool
 myTurn model =
     let
         currentUserName =
-            userField model model.currentUser .name
+            Array.get model.currentUser model.users
+                |> Maybe.withDefault nullUser
+                |> .name
     in
-        currentUserName == model.myName
+        currentUserName == model.myUserName
+
+
+
+--model.currentUser == model.myUserId
 
 
 initUsers : Array User
@@ -114,7 +114,8 @@ init =
     , nextId = 0
     , users = initUsers
     , currentUser = 0
-    , myName = "Bill"
+    , myUserId = -1
+    , myUserName = "Bill"
     , systemError = ""
     }
         ! [ ticketsRequest, usersRequest ]
@@ -151,13 +152,20 @@ update msg model =
                     userField model nextUser .name
 
                 color =
-                    if nextUserName == model.myName then
+                    if nextUserName == model.myUserName then
                         "danger"
                     else
                         "info"
             in
                 { model | currentUser = nextUser }
-                    ! [ Task.succeed (CreateFlashElement (nextUserName ++ "'s turn") color 20)
+                    ! [ Task.succeed
+                            (CreateFlashElement
+                                (nextUserName
+                                    ++ "'s turn"
+                                )
+                                color
+                                20
+                            )
                             |> Task.perform identity
                       ]
 
@@ -194,7 +202,7 @@ update msg model =
         SelectTicket id ->
             let
                 newTickets =
-                    List.map (\ticket -> markTicketSelected ticket id model.myName) model.tickets
+                    List.map (\ticket -> markTicketSelected ticket id model.myUserId) model.tickets
             in
                 { model | tickets = newTickets }
                     ! [ Task.succeed NextUser
@@ -216,7 +224,11 @@ update msg model =
                 { model | systemError = errorString } ! []
 
         ProcessUserRequest (Ok users) ->
-            { model | users = Array.fromList users } ! []
+            { model
+                | users = Array.fromList users
+                , myUserId = userIdFromName model.myUserName users
+            }
+                ! []
 
         ProcessUserRequest (Err error) ->
             let
@@ -224,6 +236,14 @@ update msg model =
                     error |> toString |> String.slice 0 120
             in
                 { model | systemError = errorString } ! []
+
+
+userIdFromName : String -> List User -> Int
+userIdFromName name users =
+    List.filter (\user -> user.name == name) users
+        |> List.head
+        |> Maybe.withDefault nullUser
+        |> .id
 
 
 transformTicketResponse : TicketResponse -> Ticket
@@ -236,10 +256,10 @@ transformTicketResponse response =
     }
 
 
-markTicketSelected : Ticket -> Int -> String -> Ticket
-markTicketSelected ticket id userName =
+markTicketSelected : Ticket -> Int -> Int -> Ticket
+markTicketSelected ticket id userId =
     if ticket.id == id then
-        { ticket | owner = Just userName }
+        { ticket | owner = Just userId }
     else
         ticket
 
@@ -268,7 +288,7 @@ userPlusButton model =
     [ h3 []
         [ span [ class "label label-default" ]
             [ text
-                ("Logged In: " ++ model.myName)
+                ("Logged In: " ++ model.myUserName)
             ]
         ]
     , h3 []
@@ -377,7 +397,7 @@ myTickets model =
             ]
         , div []
             (List.filter
-                (\ticket -> ticket.owner == Just model.myName)
+                (\ticket -> ticket.owner == Just model.myUserId)
                 model.tickets
                 |> ticketList False
             )
