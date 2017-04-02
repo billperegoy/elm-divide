@@ -103,12 +103,7 @@ myTurn model =
 
 initUsers : Array User
 initUsers =
-    [ User 0 "Joe"
-    , User 1 "Bill"
-    , User 2 "Kelly"
-    , User 3 "David"
-    , User 4 "John"
-    ]
+    []
         |> Array.fromList
 
 
@@ -122,7 +117,7 @@ init =
     , myName = "Bill"
     , systemError = ""
     }
-        ! [ ticketsRequest ]
+        ! [ ticketsRequest, usersRequest ]
 
 
 
@@ -135,6 +130,7 @@ type Msg
     | NextUser
     | SelectTicket Int
     | ProcessTicketRequest (Result Http.Error (List TicketResponse))
+    | ProcessUserRequest (Result Http.Error (List User))
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -213,6 +209,16 @@ update msg model =
                 { model | tickets = newTickets } ! []
 
         ProcessTicketRequest (Err error) ->
+            let
+                errorString =
+                    error |> toString |> String.slice 0 120
+            in
+                { model | systemError = errorString } ! []
+
+        ProcessUserRequest (Ok users) ->
+            { model | users = Array.fromList users } ! []
+
+        ProcessUserRequest (Err error) ->
             let
                 errorString =
                     error |> toString |> String.slice 0 120
@@ -412,18 +418,6 @@ ticketDecoder =
         |> Json.Decode.Pipeline.required "time" Json.Decode.string
 
 
-userDecoder : Json.Decode.Decoder User
-userDecoder =
-    Json.Decode.Pipeline.decode User
-        |> Json.Decode.Pipeline.required "id" Json.Decode.int
-        |> Json.Decode.Pipeline.required "name" Json.Decode.string
-
-
-
--- FIXME - write a decoder to convert string to User union type
---         call that in the above pipeline
-
-
 ticketsRequest : Cmd Msg
 ticketsRequest =
     let
@@ -431,6 +425,27 @@ ticketsRequest =
             "http://localhost:4000/api/v1/tickets"
     in
         Http.send ProcessTicketRequest (Http.get url ticketListDecoder)
+
+
+userListDecoder : Json.Decode.Decoder (List User)
+userListDecoder =
+    Json.Decode.list userDecoder
+
+
+userDecoder : Json.Decode.Decoder User
+userDecoder =
+    Json.Decode.Pipeline.decode User
+        |> Json.Decode.Pipeline.required "id" Json.Decode.int
+        |> Json.Decode.Pipeline.required "name" Json.Decode.string
+
+
+usersRequest : Cmd Msg
+usersRequest =
+    let
+        url =
+            "http://localhost:4000/api/v1/users"
+    in
+        Http.send ProcessUserRequest (Http.get url userListDecoder)
 
 
 
