@@ -4,9 +4,14 @@ defmodule Dividasaurus.Ticket do
     field :date, :string
     field :opponent, :string
     field :time, :string
-    field :user_id, :integer
     timestamps
 
-    #belongs_to :user, Dividasaurus.User
+    belongs_to :user, Dividasaurus.User
+  end
+
+  def changeset(model, params \\ :empty) do
+    model
+      |> cast(params, [:user_id])
+      |> foreign_key_constraint(:user_id)
   end
 end

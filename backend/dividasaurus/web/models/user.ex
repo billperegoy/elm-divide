@@ -5,6 +5,6 @@ defmodule Dividasaurus.User do
     field :role, :string
     timestamps
 
-    #has_many :tickets, Dividasaurus.Ticket
+    has_many :tickets, Dividasaurus.Ticket
   end
 end
