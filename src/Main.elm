@@ -9,6 +9,7 @@ import Process exposing (..)
 import Date exposing (..)
 import Array exposing (..)
 import Json.Decode
+import Json.Encode
 import Json.Decode.Pipeline
 import Http
 
@@ -132,6 +133,7 @@ type Msg
     | SelectTicket Int
     | ProcessTicketRequest (Result Http.Error (List TicketResponse))
     | ProcessUserRequest (Result Http.Error (List User))
+    | ProcessTicketSelect (Result Http.Error TicketResponse)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -205,8 +207,8 @@ update msg model =
                     List.map (\ticket -> markTicketSelected ticket id model.myUserId) model.tickets
             in
                 { model | tickets = newTickets }
-                    ! [ Task.succeed NextUser
-                            |> Task.perform identity
+                    ! [ Task.succeed NextUser |> Task.perform identity
+                      , selectTicket id model.myUserId
                       ]
 
         ProcessTicketRequest (Ok tickets) ->
@@ -231,6 +233,16 @@ update msg model =
                 ! []
 
         ProcessUserRequest (Err error) ->
+            let
+                errorString =
+                    error |> toString |> String.slice 0 120
+            in
+                { model | systemError = errorString } ! []
+
+        ProcessTicketSelect (Ok response) ->
+            model ! []
+
+        ProcessTicketSelect (Err error) ->
             let
                 errorString =
                     error |> toString |> String.slice 0 120
@@ -445,6 +457,35 @@ ticketsRequest =
             "http://localhost:4000/api/v1/tickets"
     in
         Http.send ProcessTicketRequest (Http.get url ticketListDecoder)
+
+
+put : String -> Http.Body -> Json.Decode.Decoder a -> Http.Request a
+put url body decoder =
+    Http.request
+        { method = "put"
+        , headers = []
+        , url = url
+        , body = body
+        , expect = Http.expectJson decoder
+        , timeout = Nothing
+        , withCredentials = False
+        }
+
+
+selectTicket : Int -> Int -> Cmd Msg
+selectTicket ticketId userId =
+    let
+        url =
+            "http://localhost:4000/api/v1/tickets/" ++ toString ticketId
+
+        payload =
+            Json.Encode.object
+                [ ( "user_id", Json.Encode.int userId ) ]
+
+        body =
+            Http.stringBody "application/json" (Json.Encode.encode 0 payload)
+    in
+        Http.send ProcessTicketSelect (put url body ticketDecoder)
 
 
 userListDecoder : Json.Decode.Decoder (List User)
