@@ -54,6 +54,7 @@ type alias TicketResponse =
     , date : String
     , opponent : String
     , time : String
+    , userId : Maybe Int
     }
 
 
@@ -96,10 +97,6 @@ myTurn model =
                 |> .name
     in
         currentUserName == model.myUserName
-
-
-
---model.currentUser == model.myUserId
 
 
 initUsers : Array User
@@ -264,7 +261,7 @@ transformTicketResponse response =
     , date = response.date
     , opponent = response.opponent
     , time = response.time
-    , owner = Nothing
+    , owner = response.userId
     }
 
 
@@ -448,6 +445,7 @@ ticketDecoder =
         |> Json.Decode.Pipeline.required "date" Json.Decode.string
         |> Json.Decode.Pipeline.required "opponent" Json.Decode.string
         |> Json.Decode.Pipeline.required "time" Json.Decode.string
+        |> Json.Decode.Pipeline.required "user_id" (Json.Decode.nullable Json.Decode.int)
 
 
 ticketsRequest : Cmd Msg
