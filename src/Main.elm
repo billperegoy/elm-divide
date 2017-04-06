@@ -12,6 +12,9 @@ import Json.Decode
 import Json.Encode
 import Json.Decode.Pipeline
 import Http
+import Phoenix.Socket
+import Phoenix.Channel
+import Phoenix.Push
 
 
 main : Program Never Model Msg
@@ -73,6 +76,7 @@ type alias Model =
     , myUserId : Int
     , myUserName : String
     , systemError : String
+    , phxSocket : Phoenix.Socket.Socket Msg
     }
 
 
@@ -115,6 +119,7 @@ init =
     , myUserId = -1
     , myUserName = "Bill"
     , systemError = ""
+    , phxSocket = Phoenix.Socket.init "ws://localhost:4000/socket/websocket"
     }
         ! [ ticketsRequest, usersRequest ]
 
@@ -131,6 +136,7 @@ type Msg
     | ProcessTicketRequest (Result Http.Error (List TicketResponse))
     | ProcessUserRequest (Result Http.Error (List User))
     | ProcessTicketSelect (Result Http.Error TicketResponse)
+    | PhoenixMsg (Phoenix.Socket.Msg Msg)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -245,6 +251,15 @@ update msg model =
                     error |> toString |> String.slice 0 120
             in
                 { model | systemError = errorString } ! []
+
+        PhoenixMsg msg ->
+            let
+                ( phxSocket, phxCmd ) =
+                    Phoenix.Socket.update msg model.phxSocket
+            in
+                ( { model | phxSocket = phxSocket }
+                , Cmd.map PhoenixMsg phxCmd
+                )
 
 
 userIdFromName : String -> List User -> Int
@@ -513,4 +528,4 @@ usersRequest =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    Sub.none
+    Phoenix.Socket.listen model.phxSocket PhoenixMsg

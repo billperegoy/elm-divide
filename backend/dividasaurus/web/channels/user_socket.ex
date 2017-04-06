@@ -3,6 +3,7 @@ defmodule Dividasaurus.UserSocket do
 
   ## Channels
   # channel "room:*", Dividasaurus.RoomChannel
+  channel  "ticket:*", Dividasaurus.TicketChannel
 
   ## Transports
   transport :websocket, Phoenix.Transports.WebSocket
@@ -20,6 +21,7 @@ defmodule Dividasaurus.UserSocket do
   # See `Phoenix.Token` documentation for examples in
   # performing token verification on connect.
   def connect(_params, socket) do
+    IO.puts "Connect successful..."
     {:ok, socket}
   end
 
