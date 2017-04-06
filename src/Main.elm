@@ -140,6 +140,7 @@ type Msg
     | ProcessTicketSelect (Result Http.Error TicketResponse)
     | PhoenixMsg (Phoenix.Socket.Msg Msg)
     | JoinChannel
+    | SendMessage
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -268,10 +269,7 @@ update msg model =
             let
                 channel =
                     Phoenix.Channel.init "dividasaurus:tickets"
-                        |> Phoenix.Channel.withPayload userParams
 
-                --|> Phoenix.Channel.onJoin (always (ShowJoinedMessage "rooms:lobby"))
-                --|> Phoenix.Channel.onClose (always (ShowLeftMessage "rooms:lobby"))
                 ( phxSocket, phxCmd ) =
                     Phoenix.Socket.join channel model.phxSocket
             in
@@ -279,10 +277,24 @@ update msg model =
                 , Cmd.map PhoenixMsg phxCmd
                 )
 
+        SendMessage ->
+            let
+                payload =
+                    (Json.Encode.object
+                        [ ( "user", Json.Encode.string "user" )
+                        , ( "body", Json.Encode.string "message" )
+                        ]
+                    )
 
-userParams : Json.Encode.Value
-userParams =
-    Json.Encode.object [ ( "user_id", Json.Encode.string "123" ) ]
+                push_ =
+                    Phoenix.Push.init "new:msg" "dividasaurus:tickets"
+                        |> Phoenix.Push.withPayload payload
+
+                ( phxSocket, phxCmd ) =
+                    Phoenix.Socket.push push_ model.phxSocket
+            in
+                { model | phxSocket = phxSocket }
+                    ! [ Cmd.map PhoenixMsg phxCmd ]
 
 
 userIdFromName : String -> List User -> Int
@@ -463,6 +475,7 @@ view model =
                 [ flashView model
                 , remainingTickets model.tickets itsMyTurn
                 , myTickets model
+                , button [ onClick SendMessage ] [ text "Send Message" ]
                 ]
             ]
 
