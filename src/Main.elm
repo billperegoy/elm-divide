@@ -39,10 +39,6 @@ type alias FlashElement =
     }
 
 
-
--- FIXME - Naively using strings instead of date/time
-
-
 type alias Ticket =
     { id : Int
     , date : String
@@ -121,7 +117,13 @@ init =
     , systemError = ""
     , phxSocket = Phoenix.Socket.init "ws://localhost:4000/socket/websocket"
     }
-        ! [ ticketsRequest, usersRequest ]
+        --! [ ticketsRequest, usersRequest, Task.succeed JoinChannel |> Task.perform identity ]
+        !
+            [ ticketsRequest, usersRequest, joinChannel ]
+
+
+joinChannel =
+    Task.succeed JoinChannel |> Task.perform identity
 
 
 
@@ -137,6 +139,7 @@ type Msg
     | ProcessUserRequest (Result Http.Error (List User))
     | ProcessTicketSelect (Result Http.Error TicketResponse)
     | PhoenixMsg (Phoenix.Socket.Msg Msg)
+    | JoinChannel
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -260,6 +263,26 @@ update msg model =
                 ( { model | phxSocket = phxSocket }
                 , Cmd.map PhoenixMsg phxCmd
                 )
+
+        JoinChannel ->
+            let
+                channel =
+                    Phoenix.Channel.init "dividasaurus:tickets"
+                        |> Phoenix.Channel.withPayload userParams
+
+                --|> Phoenix.Channel.onJoin (always (ShowJoinedMessage "rooms:lobby"))
+                --|> Phoenix.Channel.onClose (always (ShowLeftMessage "rooms:lobby"))
+                ( phxSocket, phxCmd ) =
+                    Phoenix.Socket.join channel model.phxSocket
+            in
+                ( { model | phxSocket = phxSocket }
+                , Cmd.map PhoenixMsg phxCmd
+                )
+
+
+userParams : Json.Encode.Value
+userParams =
+    Json.Encode.object [ ( "user_id", Json.Encode.string "123" ) ]
 
 
 userIdFromName : String -> List User -> Int

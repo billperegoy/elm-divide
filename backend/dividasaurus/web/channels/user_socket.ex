@@ -3,7 +3,7 @@ defmodule Dividasaurus.UserSocket do
 
   ## Channels
   # channel "room:*", Dividasaurus.RoomChannel
-  channel  "ticket:*", Dividasaurus.TicketChannel
+  channel  "dividasaurus:*", Dividasaurus.TicketChannel
 
   ## Transports
   transport :websocket, Phoenix.Transports.WebSocket
