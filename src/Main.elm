@@ -172,15 +172,10 @@ update msg model =
                         "info"
             in
                 { model | currentUser = nextUser }
-                    ! [ Task.succeed
-                            (CreateFlashElement
-                                (nextUserName
-                                    ++ "'s turn"
-                                )
-                                color
-                                20
-                            )
-                            |> Task.perform identity
+                    ! [ createFlashElement
+                            (nextUserName ++ "'s turn")
+                            color
+                            20
                       ]
 
         CreateFlashElement text color duration ->
@@ -302,7 +297,20 @@ update msg model =
                     ! [ Cmd.map PhoenixMsg phxCmd ]
 
         ReceiveMessage message ->
-            model ! []
+            model
+                ! [ createFlashElement "Received a message" "info" 20
+                  ]
+
+
+createFlashElement : String -> String -> Time -> Cmd Msg
+createFlashElement message color duration =
+    Task.succeed
+        (CreateFlashElement
+            message
+            color
+            duration
+        )
+        |> Task.perform identity
 
 
 userIdFromName : String -> List User -> Int
