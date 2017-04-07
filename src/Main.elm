@@ -115,11 +115,15 @@ init =
     , myUserId = -1
     , myUserName = "Bill"
     , systemError = ""
-    , phxSocket = Phoenix.Socket.init "ws://localhost:4000/socket/websocket"
+    , phxSocket = initPhoenixSocket
     }
-        --! [ ticketsRequest, usersRequest, Task.succeed JoinChannel |> Task.perform identity ]
-        !
-            [ ticketsRequest, usersRequest, joinChannel ]
+        ! [ ticketsRequest, usersRequest, joinChannel ]
+
+
+initPhoenixSocket =
+    Phoenix.Socket.init "ws://localhost:4000/socket/websocket"
+        |> Phoenix.Socket.withDebug
+        |> Phoenix.Socket.on "new:msg" "dividasaurus:tickets" ReceiveMessage
 
 
 joinChannel =
@@ -141,6 +145,7 @@ type Msg
     | PhoenixMsg (Phoenix.Socket.Msg Msg)
     | JoinChannel
     | SendMessage
+    | ReceiveMessage Json.Encode.Value
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -295,6 +300,9 @@ update msg model =
             in
                 { model | phxSocket = phxSocket }
                     ! [ Cmd.map PhoenixMsg phxCmd ]
+
+        ReceiveMessage message ->
+            model ! []
 
 
 userIdFromName : String -> List User -> Int

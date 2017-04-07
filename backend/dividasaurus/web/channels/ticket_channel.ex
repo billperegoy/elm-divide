@@ -10,7 +10,7 @@ defmodule Dividasaurus.TicketChannel do
     # Grab icket_id and user_id from body and perform the update
     # operation. Then retuen the ticket info back using a broadcast.
     IO.puts "Received message..."
-    broadcast! socket, "ticket_select", %{body: body}
+    broadcast! socket, "new:msg", %{body: body}
     {:noreply, socket}
   end
 end
