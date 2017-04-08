@@ -44,16 +44,16 @@ type alias Ticket =
     , date : String
     , opponent : String
     , time : String
-    , owner : Maybe Int
+    , userId : Maybe Int
     }
 
 
-type alias TicketResponse =
-    { id : Int
-    , date : String
-    , opponent : String
-    , time : String
-    , userId : Maybe Int
+nullTicket =
+    { id = -1
+    , date = "no date"
+    , opponent = "no opponent"
+    , time = "no time"
+    , userId = Nothing
     }
 
 
@@ -138,13 +138,12 @@ type Msg
     = CreateFlashElement String String Time
     | DeleteFlashElement Int Time
     | NextUser
-    | SelectTicket Int
-    | ProcessTicketRequest (Result Http.Error (List TicketResponse))
+    | ProcessTicketRequest (Result Http.Error (List Ticket))
     | ProcessUserRequest (Result Http.Error (List User))
-    | ProcessTicketSelect (Result Http.Error TicketResponse)
+    | ProcessTicketSelect (Result Http.Error Ticket)
     | PhoenixMsg (Phoenix.Socket.Msg Msg)
     | JoinChannel
-    | SendMessage
+    | SendMessage Int Int
     | ReceiveMessage Json.Encode.Value
 
 
@@ -208,22 +207,8 @@ update msg model =
             in
                 { model | flashElements = newList } ! []
 
-        SelectTicket id ->
-            let
-                newTickets =
-                    List.map (\ticket -> markTicketSelected ticket id model.myUserId) model.tickets
-            in
-                { model | tickets = newTickets }
-                    ! [ Task.succeed NextUser |> Task.perform identity
-                      , selectTicket id model.myUserId
-                      ]
-
         ProcessTicketRequest (Ok tickets) ->
-            let
-                newTickets =
-                    List.map transformTicketResponse tickets
-            in
-                { model | tickets = newTickets } ! []
+            { model | tickets = tickets } ! []
 
         ProcessTicketRequest (Err error) ->
             let
@@ -277,12 +262,12 @@ update msg model =
                 , Cmd.map PhoenixMsg phxCmd
                 )
 
-        SendMessage ->
+        SendMessage ticketId userId ->
             let
                 payload =
                     (Json.Encode.object
-                        [ ( "user", Json.Encode.string "user" )
-                        , ( "body", Json.Encode.string "message" )
+                        [ ( "user_id", Json.Encode.int userId )
+                        , ( "ticket_id", Json.Encode.int ticketId )
                         ]
                     )
 
@@ -297,9 +282,25 @@ update msg model =
                     ! [ Cmd.map PhoenixMsg phxCmd ]
 
         ReceiveMessage message ->
-            model
-                ! [ createFlashElement "Received a message" "info" 20
-                  ]
+            let
+                updatedTicket =
+                    Json.Encode.encode 0 message
+                        |> Json.Decode.decodeString ticketDecoder
+                        |> Result.withDefault nullTicket
+
+                newTickets =
+                    List.map
+                        (\ticket ->
+                            if ticket.id == updatedTicket.id then
+                                updatedTicket
+                            else
+                                ticket
+                        )
+                        model.tickets
+            in
+                { model | tickets = newTickets }
+                    ! [ createFlashElement (toString updatedTicket) "info" 20
+                      ]
 
 
 createFlashElement : String -> String -> Time -> Cmd Msg
@@ -321,20 +322,10 @@ userIdFromName name users =
         |> .id
 
 
-transformTicketResponse : TicketResponse -> Ticket
-transformTicketResponse response =
-    { id = response.id
-    , date = response.date
-    , opponent = response.opponent
-    , time = response.time
-    , owner = response.userId
-    }
-
-
 markTicketSelected : Ticket -> Int -> Int -> Ticket
 markTicketSelected ticket id userId =
     if ticket.id == id then
-        { ticket | owner = Just userId }
+        { ticket | userId = Just userId }
     else
         ticket
 
@@ -410,15 +401,15 @@ header model =
             ]
 
 
-ticketList : Bool -> List Ticket -> List (Html Msg)
-ticketList myTurn tickets =
+ticketList : Int -> Bool -> List Ticket -> List (Html Msg)
+ticketList myUserId myTurn tickets =
     List.map
-        (\ticket -> singleTicket ticket myTurn)
+        (\ticket -> singleTicket ticket myUserId myTurn)
         tickets
 
 
-singleTicket : Ticket -> Bool -> Html Msg
-singleTicket ticket myTurn =
+singleTicket : Ticket -> Int -> Bool -> Html Msg
+singleTicket ticket myUserId myTurn =
     let
         innerDiv =
             div [ class "panel panel-default" ]
@@ -430,15 +421,15 @@ singleTicket ticket myTurn =
                 ]
     in
         if myTurn then
-            a [ onClick (SelectTicket ticket.id), href "#" ]
+            a [ onClick (SendMessage ticket.id myUserId), href "3" ]
                 [ innerDiv
                 ]
         else
             innerDiv
 
 
-remainingTickets : List Ticket -> Bool -> Html Msg
-remainingTickets tickets myTurn =
+remainingTickets : List Ticket -> Int -> Bool -> Html Msg
+remainingTickets tickets myUserId myTurn =
     div
         [ class "col-md-4" ]
         [ h1 [ style [ ( "padding-bottom", "10px" ) ] ]
@@ -448,9 +439,9 @@ remainingTickets tickets myTurn =
             ]
         , div []
             (List.filter
-                (\ticket -> ticket.owner == Nothing)
+                (\ticket -> ticket.userId == Nothing)
                 tickets
-                |> ticketList myTurn
+                |> ticketList myUserId myTurn
             )
         ]
 
@@ -472,9 +463,9 @@ myTickets model =
             ]
         , div []
             (List.filter
-                (\ticket -> ticket.owner == Just model.myUserId)
+                (\ticket -> ticket.userId == Just model.myUserId)
                 model.tickets
-                |> ticketList False
+                |> ticketList model.myUserId False
             )
         ]
 
@@ -489,9 +480,8 @@ view model =
             [ header model
             , div [ class "row" ]
                 [ flashView model
-                , remainingTickets model.tickets itsMyTurn
+                , remainingTickets model.tickets model.myUserId itsMyTurn
                 , myTickets model
-                , button [ onClick SendMessage ] [ text "Send Message" ]
                 ]
             ]
 
@@ -500,14 +490,14 @@ view model =
 -- Decoders
 
 
-ticketListDecoder : Json.Decode.Decoder (List TicketResponse)
+ticketListDecoder : Json.Decode.Decoder (List Ticket)
 ticketListDecoder =
     Json.Decode.list ticketDecoder
 
 
-ticketDecoder : Json.Decode.Decoder TicketResponse
+ticketDecoder : Json.Decode.Decoder Ticket
 ticketDecoder =
-    Json.Decode.Pipeline.decode TicketResponse
+    Json.Decode.Pipeline.decode Ticket
         |> Json.Decode.Pipeline.required "id" Json.Decode.int
         |> Json.Decode.Pipeline.required "date" Json.Decode.string
         |> Json.Decode.Pipeline.required "opponent" Json.Decode.string
@@ -522,35 +512,6 @@ ticketsRequest =
             "http://localhost:4000/api/v1/tickets"
     in
         Http.send ProcessTicketRequest (Http.get url ticketListDecoder)
-
-
-put : String -> Http.Body -> Json.Decode.Decoder a -> Http.Request a
-put url body decoder =
-    Http.request
-        { method = "put"
-        , headers = []
-        , url = url
-        , body = body
-        , expect = Http.expectJson decoder
-        , timeout = Nothing
-        , withCredentials = False
-        }
-
-
-selectTicket : Int -> Int -> Cmd Msg
-selectTicket ticketId userId =
-    let
-        url =
-            "http://localhost:4000/api/v1/tickets/" ++ toString ticketId
-
-        payload =
-            Json.Encode.object
-                [ ( "user_id", Json.Encode.int userId ) ]
-
-        body =
-            Http.stringBody "application/json" (Json.Encode.encode 0 payload)
-    in
-        Http.send ProcessTicketSelect (put url body ticketDecoder)
 
 
 userListDecoder : Json.Decode.Decoder (List User)
