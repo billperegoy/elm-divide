@@ -9,6 +9,5 @@ defmodule Dividasaurus.Router do
     pipe_through :api
     get "/users", UserController, :index
     get "/tickets", TicketController, :index
-    put "/tickets/:id", TicketController, :update
   end
 end
