@@ -140,7 +140,6 @@ type Msg
     | NextUser
     | ProcessTicketRequest (Result Http.Error (List Ticket))
     | ProcessUserRequest (Result Http.Error (List User))
-    | ProcessTicketSelect (Result Http.Error Ticket)
     | PhoenixMsg (Phoenix.Socket.Msg Msg)
     | JoinChannel
     | SendMessage Int Int
@@ -225,16 +224,6 @@ update msg model =
                 ! []
 
         ProcessUserRequest (Err error) ->
-            let
-                errorString =
-                    error |> toString |> String.slice 0 120
-            in
-                { model | systemError = errorString } ! []
-
-        ProcessTicketSelect (Ok response) ->
-            model ! []
-
-        ProcessTicketSelect (Err error) ->
             let
                 errorString =
                     error |> toString |> String.slice 0 120

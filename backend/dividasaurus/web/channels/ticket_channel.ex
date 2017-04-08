@@ -8,10 +8,6 @@ defmodule Dividasaurus.TicketChannel do
   end
 
   def handle_in("new:msg", %{"user_id" => user_id, "ticket_id" => ticket_id}, socket) do
-    # Grab icket_id and user_id from body and perform the update
-    # operation. Then retuen the ticket info back using a broadcast.
-    IO.puts "Received message..."
-
     # FIXME - Need to do error checking on both get and update
     # Also, do I need to do another get or does update return what I
     # want to send back
