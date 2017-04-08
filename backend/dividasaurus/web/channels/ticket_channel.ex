@@ -8,13 +8,16 @@ defmodule Dividasaurus.TicketChannel do
   end
 
   def handle_in("new:msg", %{"user_id" => user_id, "ticket_id" => ticket_id}, socket) do
-    # FIXME - Need to do error checking on both get and update
-    # Also, do I need to do another get or does update return what I
-    # want to send back
     ticket = Repo.get(Ticket, ticket_id)
-    changeset = Dividasaurus.Ticket.changeset(ticket, %{"user_id" => user_id})
-    Repo.update(changeset)
-    ticket = Repo.get(Ticket, ticket_id)
+    result = Dividasaurus.Ticket.changeset(ticket, %{"user_id" => user_id})
+             |> Repo.update
+
+     case  result do
+       {:ok, _} ->
+         IO.puts "Update sucessful"
+       {:error, result} ->
+         IO.puts "Update failed: #{inspect result.errors}"
+     end
 
     broadcast! socket, "new:msg", ticket 
     {:noreply, socket}
