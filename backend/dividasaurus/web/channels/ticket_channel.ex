@@ -8,18 +8,18 @@ defmodule Dividasaurus.TicketChannel do
   end
 
   def handle_in("new:msg", %{"user_id" => user_id, "ticket_id" => ticket_id}, socket) do
-    ticket = Repo.get(Ticket, ticket_id)
-    result = Dividasaurus.Ticket.changeset(ticket, %{"user_id" => user_id})
+    result = Repo.get(Ticket, ticket_id)
+             |> Dividasaurus.Ticket.changeset(%{"user_id" => user_id})
              |> Repo.update
 
-     case  result do
+     case result do
        {:ok, _} ->
-         IO.puts "Update sucessful"
+         ticket = Repo.get(Ticket, ticket_id)
+         broadcast! socket, "new:msg", ticket 
        {:error, result} ->
          IO.puts "Update failed: #{inspect result.errors}"
      end
 
-    broadcast! socket, "new:msg", ticket 
     {:noreply, socket}
   end
 end

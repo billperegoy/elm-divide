@@ -3,7 +3,7 @@ defmodule Dividasaurus.Repo.Migrations.AddUserIdToTickets do
 
   def change do
     alter table(:tickets) do
-      add :user_id, references(:tickets)
+      add :user_id, references(:users)
     end
   end
 end
