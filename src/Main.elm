@@ -410,7 +410,7 @@ singleTicket ticket myUserId myTurn =
                 ]
     in
         if myTurn then
-            a [ onClick (SendMessage ticket.id myUserId), href "3" ]
+            a [ onClick (SendMessage ticket.id myUserId), href "#" ]
                 [ innerDiv
                 ]
         else
