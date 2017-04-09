@@ -112,7 +112,7 @@ init =
 
 
 initPhoenixSocket =
-    Phoenix.Socket.init "ws://localhost:4000/socket/websocket"
+    Phoenix.Socket.init (wsBase ++ "/socket/websocket")
         |> Phoenix.Socket.withDebug
         |> Phoenix.Socket.on "new:msg" "dividasaurus:tickets" ReceiveMessage
 
@@ -537,11 +537,24 @@ ticketDecoder =
         |> Json.Decode.Pipeline.required "user_id" (Json.Decode.nullable Json.Decode.int)
 
 
+hostName =
+    --"dry-gorge-98580.herokuapp.com"
+    "localhost:4000"
+
+
+urlBase =
+    "http://" ++ hostName
+
+
+wsBase =
+    "ws://" ++ hostName
+
+
 ticketsRequest : Cmd Msg
 ticketsRequest =
     let
         url =
-            "http://localhost:4000/api/v1/tickets"
+            urlBase ++ "/api/v1/tickets"
     in
         Http.send ProcessTicketRequest (Http.get url ticketListDecoder)
 
@@ -562,7 +575,7 @@ usersRequest : Cmd Msg
 usersRequest =
     let
         url =
-            "http://localhost:4000/api/v1/users"
+            urlBase ++ "/api/v1/users"
     in
         Http.send ProcessUserRequest (Http.get url userListDecoder)
 

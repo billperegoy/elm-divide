@@ -14276,6 +14276,9 @@ var _fbonetti$elm_phoenix_socket$Phoenix_Socket$listen = F2(
 			});
 	});
 
+var _user$project$Main$hostName = 'localhost:4000';
+var _user$project$Main$urlBase = A2(_elm_lang$core$Basics_ops['++'], 'http://', _user$project$Main$hostName);
+var _user$project$Main$wsBase = A2(_elm_lang$core$Basics_ops['++'], 'ws://', _user$project$Main$hostName);
 var _user$project$Main$header = function (model) {
 	var errorAttributes = _elm_lang$core$Native_Utils.eq(model.systemError, '') ? {ctor: '[]'} : {
 		ctor: '::',
@@ -14477,7 +14480,8 @@ var _user$project$Main$initPhoenixSocket = A4(
 	'dividasaurus:tickets',
 	_user$project$Main$ReceiveMessage,
 	_fbonetti$elm_phoenix_socket$Phoenix_Socket$withDebug(
-		_fbonetti$elm_phoenix_socket$Phoenix_Socket$init('ws://localhost:4000/socket/websocket')));
+		_fbonetti$elm_phoenix_socket$Phoenix_Socket$init(
+			A2(_elm_lang$core$Basics_ops['++'], _user$project$Main$wsBase, '/socket/websocket'))));
 var _user$project$Main$SendMessage = F2(
 	function (a, b) {
 		return {ctor: 'SendMessage', _0: a, _1: b};
@@ -14699,7 +14703,7 @@ var _user$project$Main$ProcessUserRequest = function (a) {
 	return {ctor: 'ProcessUserRequest', _0: a};
 };
 var _user$project$Main$usersRequest = function () {
-	var url = 'http://localhost:4000/api/v1/users';
+	var url = A2(_elm_lang$core$Basics_ops['++'], _user$project$Main$urlBase, '/api/v1/users');
 	return A2(
 		_elm_lang$http$Http$send,
 		_user$project$Main$ProcessUserRequest,
@@ -14709,7 +14713,7 @@ var _user$project$Main$ProcessTicketRequest = function (a) {
 	return {ctor: 'ProcessTicketRequest', _0: a};
 };
 var _user$project$Main$ticketsRequest = function () {
-	var url = 'http://localhost:4000/api/v1/tickets';
+	var url = A2(_elm_lang$core$Basics_ops['++'], _user$project$Main$urlBase, '/api/v1/tickets');
 	return A2(
 		_elm_lang$http$Http$send,
 		_user$project$Main$ProcessTicketRequest,
