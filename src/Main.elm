@@ -83,11 +83,6 @@ nullUser =
     }
 
 
-initTickets : List Ticket
-initTickets =
-    []
-
-
 myTurn : Model -> Bool
 myTurn model =
     let
@@ -99,18 +94,12 @@ myTurn model =
         currentUserName == model.myUserName
 
 
-initUsers : Array User
-initUsers =
-    []
-        |> Array.fromList
-
-
 init : ( Model, Cmd Msg )
 init =
-    { tickets = initTickets
+    { tickets = []
     , flashElements = []
     , nextId = 0
-    , users = initUsers
+    , users = Array.fromList []
     , currentUser = 0
     , myUserId = -1
     , myUserName = "Bill"
