@@ -447,20 +447,28 @@ singleTicket ticket myUserId myTurn =
 
 remainingTickets : List Ticket -> Int -> Bool -> Html Msg
 remainingTickets tickets myUserId myTurn =
-    div
-        [ class "col-md-4" ]
-        [ h1 [ style [ ( "padding-bottom", "10px" ) ] ]
-            [ span
-                [ class "label label-primary" ]
-                [ text "Remaining Tickets" ]
-            ]
-        , div []
+    let
+        remainingTickets =
             (List.filter
                 (\ticket -> ticket.userId == Nothing)
                 tickets
-                |> ticketList myUserId myTurn
             )
-        ]
+
+        remainingCount =
+            List.length remainingTickets
+    in
+        div
+            [ class "col-md-4" ]
+            [ h1 [ style [ ( "padding-bottom", "10px" ) ] ]
+                [ span
+                    [ class "label label-primary" ]
+                    [ text ("Remaining Tickets - " ++ toString remainingCount) ]
+                ]
+            , div []
+                (remainingTickets
+                    |> ticketList myUserId myTurn
+                )
+            ]
 
 
 userField : Model -> Int -> (User -> a) -> a
@@ -472,19 +480,26 @@ userField model index extractor =
 
 myTickets : Model -> Html Msg
 myTickets model =
-    div [ class "col-md-4" ]
-        [ h1 [ style [ ( "padding-bottom", "10px" ) ] ]
-            [ span
-                [ class "label label-primary" ]
-                [ text "My Tickets" ]
-            ]
-        , div []
-            (List.filter
+    let
+        myTickets =
+            List.filter
                 (\ticket -> ticket.userId == Just model.myUserId)
                 model.tickets
-                |> ticketList model.myUserId False
-            )
-        ]
+
+        ticketCount =
+            List.length myTickets
+    in
+        div [ class "col-md-4" ]
+            [ h1 [ style [ ( "padding-bottom", "10px" ) ] ]
+                [ span
+                    [ class "label label-primary" ]
+                    [ text ("My Tickets - " ++ toString ticketCount) ]
+                ]
+            , div []
+                (myTickets
+                    |> ticketList model.myUserId False
+                )
+            ]
 
 
 view : Model -> Html Msg
