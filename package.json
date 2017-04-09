@@ -1,17 +1,20 @@
 {
-  "name": "webtools-elm",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "repository": {},
+  "license": "MIT",
   "scripts": {
-    "watch": "elm-live src/*.elm --open --pushstate --output dist/bundle.js --debug",
-    "test": "elm-test"
+    "deploy": "brunch build --production",
+    "watch": "brunch watch --stdin"
   },
-  "author": "",
-  "license": "ISC",
+  "dependencies": {
+    "phoenix": "file:deps/phoenix",
+    "phoenix_html": "file:deps/phoenix_html"
+  },
   "devDependencies": {
-    "elm": "^0.18.0",
-    "elm-live": "^2.6.0",
-    "elm-test": "^0.17.3"
+    "babel-brunch": "~6.0.0",
+    "brunch": "2.7.4",
+    "clean-css-brunch": "~2.0.0",
+    "css-brunch": "~2.0.0",
+    "javascript-brunch": "~2.0.0",
+    "uglify-js-brunch": "~2.0.1"
   }
 }
