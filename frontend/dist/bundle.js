@@ -14276,9 +14276,10 @@ var _fbonetti$elm_phoenix_socket$Phoenix_Socket$listen = F2(
 			});
 	});
 
-var _user$project$Main$hostName = 'localhost:4000';
-var _user$project$Main$urlBase = A2(_elm_lang$core$Basics_ops['++'], 'http://', _user$project$Main$hostName);
-var _user$project$Main$wsBase = A2(_elm_lang$core$Basics_ops['++'], 'ws://', _user$project$Main$hostName);
+var _user$project$Main$useHeroku = false;
+var _user$project$Main$hostName = _user$project$Main$useHeroku ? 'dividasaurus.herokuapp.com' : 'localhost:4000';
+var _user$project$Main$urlBase = _user$project$Main$useHeroku ? A2(_elm_lang$core$Basics_ops['++'], 'https://', _user$project$Main$hostName) : A2(_elm_lang$core$Basics_ops['++'], 'http://', _user$project$Main$hostName);
+var _user$project$Main$wsBase = _user$project$Main$useHeroku ? A2(_elm_lang$core$Basics_ops['++'], 'ws://', _user$project$Main$hostName) : A2(_elm_lang$core$Basics_ops['++'], 'ws://', _user$project$Main$hostName);
 var _user$project$Main$header = function (model) {
 	var errorAttributes = _elm_lang$core$Native_Utils.eq(model.systemError, '') ? {ctor: '[]'} : {
 		ctor: '::',

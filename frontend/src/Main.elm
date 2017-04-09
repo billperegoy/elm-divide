@@ -537,17 +537,33 @@ ticketDecoder =
         |> Json.Decode.Pipeline.required "user_id" (Json.Decode.nullable Json.Decode.int)
 
 
+useHeroku : Bool
+useHeroku =
+    False
+
+
+hostName : String
 hostName =
-    --"dry-gorge-98580.herokuapp.com"
-    "localhost:4000"
+    if useHeroku then
+        "dividasaurus.herokuapp.com"
+    else
+        "localhost:4000"
 
 
+urlBase : String
 urlBase =
-    "http://" ++ hostName
+    if useHeroku then
+        "https://" ++ hostName
+    else
+        "http://" ++ hostName
 
 
+wsBase : String
 wsBase =
-    "ws://" ++ hostName
+    if useHeroku then
+        "ws://" ++ hostName
+    else
+        "ws://" ++ hostName
 
 
 ticketsRequest : Cmd Msg
