@@ -288,10 +288,34 @@ update msg model =
                                 ticket
                         )
                         model.tickets
+
+                gameDate =
+                    updatedTicket.date
+
+                gameOwner =
+                    userNameFromId
+                        (model.users |> Array.toList)
+                        (updatedTicket.userId |> Maybe.withDefault -1)
+
+                flashString =
+                    gameOwner
+                        ++ " chose "
+                        ++ gameDate
+                        ++ " ("
+                        ++ updatedTicket.opponent
+                        ++ ")"
             in
                 { model | tickets = newTickets }
-                    ! [ createFlashElement (toString updatedTicket) "info" 20
+                    ! [ createFlashElement flashString "info" 20
                       ]
+
+
+userNameFromId : List User -> Int -> String
+userNameFromId users id =
+    List.filter (\user -> user.id == id) users
+        |> List.head
+        |> Maybe.withDefault nullUser
+        |> .name
 
 
 createFlashElement : String -> String -> Time -> Cmd Msg
