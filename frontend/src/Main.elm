@@ -114,7 +114,7 @@ init =
 initPhoenixSocket =
     Phoenix.Socket.init (wsBase ++ "/socket/websocket")
         |> Phoenix.Socket.withDebug
-        |> Phoenix.Socket.on "new:msg" "dividasaurus:tickets" ReceiveMessage
+        |> Phoenix.Socket.on "ticket_select" "dividasaurus:tickets" ReceiveMessage
 
 
 joinChannel =
@@ -264,7 +264,7 @@ update msg model =
                     )
 
                 push_ =
-                    Phoenix.Push.init "new:msg" "dividasaurus:tickets"
+                    Phoenix.Push.init "ticket_select" "dividasaurus:tickets"
                         |> Phoenix.Push.withPayload payload
 
                 ( phxSocket, phxCmd ) =
@@ -572,10 +572,7 @@ urlBase =
 
 wsBase : String
 wsBase =
-    if useHeroku then
-        "ws://" ++ hostName
-    else
-        "ws://" ++ hostName
+    "ws://" ++ hostName
 
 
 ticketsRequest : Cmd Msg
