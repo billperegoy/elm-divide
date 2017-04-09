@@ -175,6 +175,7 @@ update msg model =
         SubmitUserInputField ->
             { model
                 | myUserName = model.userInputField
+                , userInputField = ""
                 , myUserId = userIdFromName model.userInputField (Array.toList model.users)
             }
                 ! []
@@ -366,22 +367,33 @@ durationString val =
 
 userPlusButton : Model -> List (Html Msg)
 userPlusButton model =
-    [ input [ onInput UpdateUserInputField ] []
-    , button [ onClick SubmitUserInputField ] [ text "Login" ]
-    , h3 []
-        [ span [ class "label label-default" ]
-            [ text
-                ("Logged In: " ++ model.myUserName)
+    let
+        loginText =
+            if model.myUserName == "" then
+                "Please Login"
+            else
+                "Logged In: " ++ model.myUserName
+
+        loginClass =
+            if model.myUserName == "" then
+                "label label-danger"
+            else
+                "label label-default"
+    in
+        [ input [ onInput UpdateUserInputField ] []
+        , button [ onClickNoDefault SubmitUserInputField ] [ text "Login" ]
+        , h3 []
+            [ span [ class loginClass ]
+                [ text loginText ]
             ]
-        ]
-    , h3 []
-        [ span [ class "label label-default" ]
-            [ text
-                ("Up Now: " ++ (userField model model.currentUser .name))
+        , h3 []
+            [ span [ class "label label-default" ]
+                [ text
+                    ("Up Now: " ++ (userField model model.currentUser .name))
+                ]
             ]
+        , button [ class "btn btn-default", onClickNoDefault NextUser ] [ text "Next User" ]
         ]
-    , button [ class "btn btn-default", onClick NextUser ] [ text "Next User" ]
-    ]
 
 
 flashView : Model -> Html Msg
@@ -438,7 +450,7 @@ singleTicket ticket myUserId myTurn =
                 ]
     in
         if myTurn then
-            a [ onClick (SendMessage ticket.id myUserId), href "#" ]
+            a [ onClickNoDefault (SendMessage ticket.id myUserId), href "#" ]
                 [ innerDiv
                 ]
         else
@@ -539,7 +551,7 @@ ticketDecoder =
 
 useHeroku : Bool
 useHeroku =
-    False
+    True
 
 
 hostName : String
@@ -594,6 +606,17 @@ usersRequest =
             urlBase ++ "/api/v1/users"
     in
         Http.send ProcessUserRequest (Http.get url userListDecoder)
+
+
+onClickNoDefault : msg -> Attribute msg
+onClickNoDefault message =
+    let
+        config =
+            { stopPropagation = True
+            , preventDefault = True
+            }
+    in
+        onWithOptions "click" config (Json.Decode.succeed message)
 
 
 
