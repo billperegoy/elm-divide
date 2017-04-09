@@ -72,6 +72,7 @@ type alias Model =
     , myUserId : Int
     , myUserName : String
     , systemError : String
+    , userInputField : String
     , phxSocket : Phoenix.Socket.Socket Msg
     }
 
@@ -102,8 +103,9 @@ init =
     , users = Array.fromList []
     , currentUser = 0
     , myUserId = -1
-    , myUserName = "Bill"
+    , myUserName = ""
     , systemError = ""
+    , userInputField = ""
     , phxSocket = initPhoenixSocket
     }
         ! [ ticketsRequest, usersRequest, joinChannel ]
@@ -127,6 +129,8 @@ type Msg
     = CreateFlashElement String String Time
     | DeleteFlashElement Int Time
     | NextUser
+    | UpdateUserInputField String
+    | SubmitUserInputField
     | ProcessTicketRequest (Result Http.Error (List Ticket))
     | ProcessUserRequest (Result Http.Error (List User))
     | PhoenixMsg (Phoenix.Socket.Msg Msg)
@@ -164,6 +168,16 @@ update msg model =
                             color
                             20
                       ]
+
+        UpdateUserInputField text ->
+            { model | userInputField = text } ! []
+
+        SubmitUserInputField ->
+            { model
+                | myUserName = model.userInputField
+                , myUserId = userIdFromName model.userInputField (Array.toList model.users)
+            }
+                ! []
 
         CreateFlashElement text color duration ->
             let
@@ -208,7 +222,6 @@ update msg model =
         ProcessUserRequest (Ok users) ->
             { model
                 | users = Array.fromList users
-                , myUserId = userIdFromName model.myUserName users
             }
                 ! []
 
@@ -329,7 +342,9 @@ durationString val =
 
 userPlusButton : Model -> List (Html Msg)
 userPlusButton model =
-    [ h3 []
+    [ input [ onInput UpdateUserInputField ] []
+    , button [ onClick SubmitUserInputField ] [ text "Login" ]
+    , h3 []
         [ span [ class "label label-default" ]
             [ text
                 ("Logged In: " ++ model.myUserName)
