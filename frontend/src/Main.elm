@@ -48,6 +48,7 @@ type alias Ticket =
     }
 
 
+nullTicket : Ticket
 nullTicket =
     { id = -1
     , date = "no date"
@@ -111,12 +112,14 @@ init =
         ! [ ticketsRequest, usersRequest, joinChannel ]
 
 
+initPhoenixSocket : Phoenix.Socket.Socket Msg
 initPhoenixSocket =
     Phoenix.Socket.init (wsBase ++ "/socket/websocket")
         |> Phoenix.Socket.withDebug
         |> Phoenix.Socket.on "ticket_select" "dividasaurus:tickets" ReceiveMessage
 
 
+joinChannel : Cmd Msg
 joinChannel =
     Task.succeed JoinChannel |> Task.perform identity
 
