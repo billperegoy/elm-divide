@@ -6,5 +6,6 @@ defmodule Dividasaurus.User do
     timestamps
 
     has_many :tickets, Dividasaurus.Ticket
+    belongs_to :group, Dividasaurus.Group
   end
 end

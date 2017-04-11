@@ -2,17 +2,27 @@
 #     mix run priv/repo/seeds.exs
 
 alias Dividasaurus.Repo
+alias Dividasaurus.Group
 alias Dividasaurus.User
 alias Dividasaurus.Ticket
 
 
 Repo.delete_all(Ticket)
 Repo.delete_all(User)
-Repo.insert! %User{ name: "Bill", role: "User" }
-Repo.insert! %User{ name: "Joe", role: "User" }
-Repo.insert! %User{ name: "John", role: "User" }
-Repo.insert! %User{ name: "Kelly", role: "User" }
-Repo.insert! %User{ name: "Dave", role: "User" }
+Repo.delete_all(Group)
+
+group = Repo.insert! %Group{ name: "My Group", active_user: nil }
+
+first_user = Repo.insert! %User{ name: "Bill", role: "User", group_id: group.id }
+Repo.insert! %User{ name: "Joe", role: "User", group_id: group.id }
+Repo.insert! %User{ name: "John", role: "User", group_id: group.id }
+Repo.insert! %User{ name: "Kelly", role: "User", group_id: nil }
+Repo.insert! %User{ name: "Dave", role: "User", group_id: nil }
+
+group = Repo.get_by(Group, name: "My Group")
+group
+  |> Dividasaurus.Group.changeset(%{"active_user" => first_user.id})
+  |> Repo.update
 
 Repo.insert %Ticket{ date: "04/08/17", opponent: "@Tigers", time: "01:10 PM", user_id: nil }
 Repo.insert %Ticket{ date: "04/09/17", opponent: "@Tigers", time: "01:10 PM", user_id: nil }

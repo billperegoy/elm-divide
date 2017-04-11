@@ -12,6 +12,6 @@ defimpl Poison.Encoder, for: Any do
   end
 
   defp remove_associations(map) do
-    Map.drop(map, [:tickets, :user])
+    Map.drop(map, [:tickets, :user, :group])
   end
 end
