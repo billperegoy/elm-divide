@@ -553,7 +553,7 @@ ticketDecoder =
 
 useHeroku : Bool
 useHeroku =
-    False
+    True
 
 
 hostName : String
