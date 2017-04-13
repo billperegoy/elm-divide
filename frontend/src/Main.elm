@@ -574,7 +574,7 @@ urlBase =
 
 wsBase : String
 wsBase =
-    "ws://" ++ hostName
+    "wss://" ++ hostName
 
 
 ticketsRequest : Cmd Msg
