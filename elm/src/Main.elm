@@ -489,7 +489,7 @@ useHeroku =
 hostName : String
 hostName =
     if useHeroku then
-        "dividasaur.us"
+        "dividasaurus.herokuapp.com"
     else
         "localhost:4000"
 
