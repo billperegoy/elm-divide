@@ -42,7 +42,8 @@ exports.config = {
     // Dependencies and current project directories to watch
     watched: [
       "web/static",
-      "test/static"
+      "test/static",
+      "frontend"
     ],
 
     // Where to compile files to
@@ -54,6 +55,29 @@ exports.config = {
     babel: {
       // Do not use ES6 compiler in vendor code
       ignore: [/web\/static\/vendor/]
+    },
+    elmBrunch: {
+      // (required) Set to the elm file(s) containing your "main" function `elm make` 
+      //            handles all elm dependencies relative to `elmFolder`
+      mainModules: ['src/Main.elm'],
+
+      // (optional) Set to path where `elm-make` is located, relative to `elmFolder`
+      executablePath: '../node_modules/elm/binwrappers',
+
+      // (optional) Set to path where elm-package.json is located, defaults to project root
+      //            if your elm files are not in /app then make sure to configure 
+      //            paths.watched in main brunch config
+      elmFolder: 'frontend',
+
+      // (optional) Defaults to 'js/' folder in paths.public
+      outputFolder: '../priv/static/js',
+
+      // (optional) If specified, all mainModules will be compiled to a single file 
+      //            This is merged with outputFolder.
+      outputFile: 'bundle.js',
+
+      // (optional) add some parameters that are passed to elm-make
+      makeParameters: ['--warn']
     }
   },
 
