@@ -574,7 +574,10 @@ urlBase =
 
 wsBase : String
 wsBase =
-    "wss://" ++ hostName
+    if useHeroku then
+        "wss://" ++ hostName
+    else
+        "ws://" ++ hostName
 
 
 ticketsRequest : Cmd Msg
