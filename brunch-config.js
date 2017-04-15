@@ -43,7 +43,7 @@ exports.config = {
     watched: [
       "web/static",
       "test/static",
-      "frontend/src"
+      "elm/src"
     ],
 
     // Where to compile files to
@@ -58,7 +58,7 @@ exports.config = {
     },
     elmBrunch: {
       executablePath: '../node_modules/elm/binwrappers',
-      elmFolder: 'frontend',
+      elmFolder: 'elm',
       mainModules: ['src/Main.elm'],
       outputFolder: '../priv/static/js',
       outputFile: 'bundle.js',
