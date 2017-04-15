@@ -43,7 +43,7 @@ exports.config = {
     watched: [
       "web/static",
       "test/static",
-      "frontend"
+      "frontend/src"
     ],
 
     // Where to compile files to
