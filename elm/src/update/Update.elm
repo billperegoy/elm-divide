@@ -1,4 +1,4 @@
-module Update exposing (..)
+module Update exposing (update)
 
 import Array
 import Json.Encode

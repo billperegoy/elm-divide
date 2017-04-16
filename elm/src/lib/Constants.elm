@@ -1,4 +1,4 @@
-module Constants exposing (..)
+module Constants exposing (urlBase, wsBase)
 
 
 useHeroku : Bool

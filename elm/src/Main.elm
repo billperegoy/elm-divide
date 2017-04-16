@@ -5,7 +5,8 @@ import Model exposing (..)
 import Subscriptions
 import Update
 import View
-import Decoders
+import TicketDecoder
+import UserDecoder
 import Utils
 
 
@@ -14,7 +15,7 @@ main =
     Html.program
         { init =
             Model.init
-                ! [ Decoders.ticketsRequest, Decoders.usersRequest, Utils.joinChannel ]
+                ! [ TicketDecoder.httpRequest, UserDecoder.httpRequest, Utils.joinChannel ]
         , view = View.view
         , update = Update.update
         , subscriptions = Subscriptions.subscriptions

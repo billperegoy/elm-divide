@@ -1,4 +1,4 @@
-module Subscriptions exposing (..)
+module Subscriptions exposing (subscriptions)
 
 import Phoenix.Socket
 
