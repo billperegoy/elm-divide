@@ -14,9 +14,11 @@ import Http
 import Phoenix.Socket
 import Phoenix.Channel
 import Phoenix.Push
+import MsgTypes exposing (..)
+import Model exposing (..)
 
 
-main : Program Never Model Msg
+main : Program Never (Model Msg) Msg
 main =
     Html.program
         { init = init
@@ -26,65 +28,7 @@ main =
         }
 
 
-
--- Model
-
-
-type alias FlashElement =
-    { id : Int
-    , text : String
-    , color : String
-    , duration : Time
-    }
-
-
-type alias Ticket =
-    { id : Int
-    , date : String
-    , opponent : String
-    , time : String
-    , userId : Maybe Int
-    }
-
-
-nullTicket : Ticket
-nullTicket =
-    { id = -1
-    , date = "no date"
-    , opponent = "no opponent"
-    , time = "no time"
-    , userId = Nothing
-    }
-
-
-type alias User =
-    { id : Int
-    , name : String
-    }
-
-
-type alias Model =
-    { tickets : List Ticket
-    , flashElements : List FlashElement
-    , nextId : Int
-    , users : Array User
-    , currentUser : Int
-    , myUserId : Int
-    , myUserName : String
-    , systemError : String
-    , userInputField : String
-    , phxSocket : Phoenix.Socket.Socket Msg
-    }
-
-
-nullUser : User
-nullUser =
-    { id = -1
-    , name = "guest"
-    }
-
-
-myTurn : Model -> Bool
+myTurn : Model Msg -> Bool
 myTurn model =
     let
         currentUserName =
@@ -95,7 +39,7 @@ myTurn model =
         currentUserName == model.myUserName
 
 
-init : ( Model, Cmd Msg )
+init : ( Model Msg, Cmd Msg )
 init =
     { tickets = []
     , flashElements = []
@@ -127,21 +71,7 @@ joinChannel =
 -- Update
 
 
-type Msg
-    = CreateFlashElement String String Time
-    | DeleteFlashElement Int Time
-    | NextUser
-    | UpdateUserInputField String
-    | SubmitUserInputField
-    | ProcessTicketRequest (Result Http.Error (List Ticket))
-    | ProcessUserRequest (Result Http.Error (List User))
-    | PhoenixMsg (Phoenix.Socket.Msg Msg)
-    | JoinChannel
-    | SendMessage Int Int
-    | ReceiveMessage Json.Encode.Value
-
-
-update : Msg -> Model -> ( Model, Cmd Msg )
+update : Msg -> Model Msg -> ( Model Msg, Cmd Msg )
 update msg model =
     case msg of
         NextUser ->
@@ -367,7 +297,7 @@ durationString val =
         toString val
 
 
-userPlusButton : Model -> List (Html Msg)
+userPlusButton : Model Msg -> List (Html Msg)
 userPlusButton model =
     let
         loginText =
@@ -398,7 +328,7 @@ userPlusButton model =
         ]
 
 
-flashView : Model -> Html Msg
+flashView : Model Msg -> Html Msg
 flashView model =
     div [ class "col-md-2" ]
         ((userPlusButton model)
@@ -417,7 +347,7 @@ flashViewElements elements =
         elements
 
 
-header : Model -> Html Msg
+header : Model Msg -> Html Msg
 header model =
     let
         errorAttributes =
@@ -485,14 +415,14 @@ remainingTickets tickets myUserId myTurn =
             ]
 
 
-userField : Model -> Int -> (User -> a) -> a
+userField : Model Msg -> Int -> (User -> a) -> a
 userField model index extractor =
     Array.get index model.users
         |> Maybe.withDefault nullUser
         |> extractor
 
 
-myTickets : Model -> Html Msg
+myTickets : Model Msg -> Html Msg
 myTickets model =
     let
         myTickets =
@@ -516,7 +446,7 @@ myTickets model =
             ]
 
 
-view : Model -> Html Msg
+view : Model Msg -> Html Msg
 view model =
     let
         itsMyTurn =
@@ -625,6 +555,6 @@ onClickNoDefault message =
 -- Subscriptions
 
 
-subscriptions : Model -> Sub Msg
+subscriptions : Model Msg -> Sub Msg
 subscriptions model =
     Phoenix.Socket.listen model.phxSocket PhoenixMsg
