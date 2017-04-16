@@ -7,11 +7,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Utils
 import Json.Decode
-import Json.Decode.Pipeline
 import Array
-import Http
-import Constants
-import Task
 
 
 durationString : Time.Time -> String

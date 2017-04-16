@@ -1,10 +1,10 @@
 {
-  "name": "webtools-elm",
+  "name": "elm-divide",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "watch": "elm-live src/*.elm src/*/*.elm --open --pushstate --output dist/bundle.js --warn   --debug",
+    "watch": "elm-live src/Main.elm src/*/*.elm --open --pushstate --output dist/bundle.js --warn   --debug",
     "test": "elm-test"
   },
   "author": "",
