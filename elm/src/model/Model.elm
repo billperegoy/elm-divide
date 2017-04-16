@@ -1,17 +1,23 @@
 module Model exposing (..)
 
-import Time
-import Phoenix.Socket
 import Array
-import Json.Encode
 import Http
+import Json.Encode
+import Phoenix.Socket
 import Time
+
+
+--
+
 import Constants
+import FlashElement
+import User exposing (..)
+import Ticket exposing (..)
 
 
 type alias Model =
     { tickets : List Ticket
-    , flashElements : List FlashElement
+    , flashElements : List FlashElement.FlashElement
     , nextId : Int
     , users : Array.Array User
     , currentUser : Int
@@ -20,46 +26,6 @@ type alias Model =
     , systemError : String
     , userInputField : String
     , phxSocket : Phoenix.Socket.Socket Msg
-    }
-
-
-type alias FlashElement =
-    { id : Int
-    , text : String
-    , color : String
-    , duration : Time.Time
-    }
-
-
-type alias Ticket =
-    { id : Int
-    , date : String
-    , opponent : String
-    , time : String
-    , userId : Maybe Int
-    }
-
-
-type alias User =
-    { id : Int
-    , name : String
-    }
-
-
-nullUser : User
-nullUser =
-    { id = -1
-    , name = "guest"
-    }
-
-
-nullTicket : Ticket
-nullTicket =
-    { id = -1
-    , date = "no date"
-    , opponent = "no opponent"
-    , time = "no time"
-    , userId = Nothing
     }
 
 

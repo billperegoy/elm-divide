@@ -1,10 +1,16 @@
 module Decoders exposing (..)
 
-import Constants
-import Model exposing (..)
 import Http
 import Json.Decode
 import Json.Decode.Pipeline
+
+
+--
+
+import Constants
+import Model exposing (..)
+import Ticket exposing (..)
+import User exposing (..)
 
 
 ticketsRequest : Cmd Msg

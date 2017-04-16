@@ -1,6 +1,7 @@
 module Utils exposing (..)
 
 import Model exposing (..)
+import User exposing (..)
 import Array
 import Task
 

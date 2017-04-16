@@ -16,7 +16,7 @@ To use this repository, you should follow these steps.
 
 6. mix run priv/repo/seeds.exs
 
-7. cd frontend
+7. cd elm
  
 8. npm install
 

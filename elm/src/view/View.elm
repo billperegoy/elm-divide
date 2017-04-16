@@ -1,13 +1,20 @@
 module View exposing (..)
 
-import Time
-import Model exposing (..)
+import Array
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
-import Utils
 import Json.Decode
-import Array
+import Time
+import Utils
+
+
+--
+
+import FlashElement
+import Model exposing (..)
+import Ticket exposing (..)
+import User exposing (..)
 
 
 durationString : Time.Time -> String
@@ -57,7 +64,7 @@ flashView model =
         )
 
 
-flashViewElements : List FlashElement -> List (Html Msg)
+flashViewElements : List FlashElement.FlashElement -> List (Html Msg)
 flashViewElements elements =
     List.map
         (\elem ->

@@ -1,17 +1,23 @@
 module Update exposing (..)
 
-import Model exposing (..)
 import Array
-import Task
-import Time
-import Phoenix.Socket
-import Phoenix.Channel
-import Phoenix.Push
 import Json.Encode
 import Json.Decode
 import Json.Decode.Pipeline
-import Result
+import Phoenix.Channel
+import Phoenix.Push
+import Phoenix.Socket
 import Process
+import Result
+import Task
+import Time
+
+
+--
+
+import Model exposing (..)
+import Ticket exposing (..)
+import User exposing (..)
 import Utils
 
 
