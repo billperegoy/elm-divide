@@ -1,227 +1,51 @@
 module Update exposing (update)
 
-import Array
-import Json.Encode
-import Json.Decode
-import Phoenix.Channel
-import Phoenix.Push
-import Phoenix.Socket
-import Process
-import Result
-import Task
-import Time
+import Update.Utils exposing (..)
 
 
 --
 
 import Model exposing (..)
-import Ticket exposing (..)
-import User exposing (..)
-import TicketDecoder
-import Utils
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         NextUser ->
-            let
-                length =
-                    Array.length model.users
-
-                nextUser =
-                    if model.currentUser == (length - 1) then
-                        0
-                    else
-                        model.currentUser + 1
-
-                nextUserName =
-                    Utils.userField model nextUser .name
-
-                color =
-                    if nextUserName == model.myUserName then
-                        "danger"
-                    else
-                        "info"
-            in
-                { model | currentUser = nextUser }
-                    ! [ createFlashElement
-                            (nextUserName ++ "'s turn")
-                            color
-                            20
-                      ]
+            Update.Utils.nextUser model
 
         UpdateUserInputField text ->
-            { model | userInputField = text } ! []
+            Update.Utils.updateUserInputField model text
 
         SubmitUserInputField ->
-            { model
-                | myUserName = model.userInputField
-                , userInputField = ""
-                , myUserId = userIdFromName model.userInputField (Array.toList model.users)
-            }
-                ! []
+            Update.Utils.submitUserInputField model
 
         CreateFlashElement text color duration ->
-            let
-                newFlashElement =
-                    { id = model.nextId
-                    , text = text
-                    , color = color
-                    , duration = duration
-                    }
-
-                newList =
-                    newFlashElement :: model.flashElements
-            in
-                { model
-                    | flashElements = newList
-                    , nextId = model.nextId + 1
-                }
-                    ! [ deleteCmd
-                            model.nextId
-                            newFlashElement.duration
-                      ]
+            Update.Utils.createFlashElementAction model text color duration
 
         DeleteFlashElement id time ->
-            let
-                newList =
-                    List.filter
-                        (\elem -> elem.id /= id)
-                        model.flashElements
-            in
-                { model | flashElements = newList } ! []
+            Update.Utils.deleteFlashElement model id time
 
         ProcessTicketRequest (Ok tickets) ->
-            { model | tickets = tickets } ! []
+            Update.Utils.processValidTicketRequest model tickets
 
         ProcessTicketRequest (Err error) ->
-            let
-                errorString =
-                    error |> toString |> String.slice 0 120
-            in
-                { model | systemError = errorString } ! []
+            Update.Utils.processErrorTicketRequest model error
 
         ProcessUserRequest (Ok users) ->
-            { model
-                | users = Array.fromList users
-            }
-                ! []
+            Update.Utils.processValidUserRequest model users
 
         ProcessUserRequest (Err error) ->
-            let
-                errorString =
-                    error |> toString |> String.slice 0 120
-            in
-                { model | systemError = errorString } ! []
+            Update.Utils.processErrorUserRequest model error
 
         PhoenixMsg msg ->
-            let
-                ( phxSocket, phxCmd ) =
-                    Phoenix.Socket.update msg model.phxSocket
-            in
-                ( { model | phxSocket = phxSocket }
-                , Cmd.map PhoenixMsg phxCmd
-                )
+            Update.Utils.phoenixMsg model msg
 
         JoinChannel ->
-            let
-                channel =
-                    Phoenix.Channel.init "dividasaurus:tickets"
-
-                ( phxSocket, phxCmd ) =
-                    Phoenix.Socket.join channel model.phxSocket
-            in
-                ( { model | phxSocket = phxSocket }
-                , Cmd.map PhoenixMsg phxCmd
-                )
+            Update.Utils.joinChannel model
 
         SendMessage ticketId userId ->
-            let
-                payload =
-                    (Json.Encode.object
-                        [ ( "user_id", Json.Encode.int userId )
-                        , ( "ticket_id", Json.Encode.int ticketId )
-                        ]
-                    )
-
-                push_ =
-                    Phoenix.Push.init "ticket_select" "dividasaurus:tickets"
-                        |> Phoenix.Push.withPayload payload
-
-                ( phxSocket, phxCmd ) =
-                    Phoenix.Socket.push push_ model.phxSocket
-            in
-                { model | phxSocket = phxSocket }
-                    ! [ Cmd.map PhoenixMsg phxCmd ]
+            Update.Utils.sendMessage model ticketId userId
 
         ReceiveMessage message ->
-            let
-                updatedTicket =
-                    Json.Encode.encode 0 message
-                        |> Json.Decode.decodeString TicketDecoder.decoder
-                        |> Result.withDefault nullTicket
-
-                newTickets =
-                    List.map
-                        (\ticket ->
-                            if ticket.id == updatedTicket.id then
-                                updatedTicket
-                            else
-                                ticket
-                        )
-                        model.tickets
-
-                gameDate =
-                    updatedTicket.date
-
-                gameOwner =
-                    userNameFromId
-                        (model.users |> Array.toList)
-                        (updatedTicket.userId |> Maybe.withDefault -1)
-
-                flashString =
-                    gameOwner
-                        ++ " chose "
-                        ++ gameDate
-                        ++ " ("
-                        ++ updatedTicket.opponent
-                        ++ ")"
-            in
-                { model | tickets = newTickets }
-                    ! [ createFlashElement flashString "info" 20
-                      ]
-
-
-createFlashElement : String -> String -> Time.Time -> Cmd Msg
-createFlashElement message color duration =
-    Task.succeed
-        (CreateFlashElement
-            message
-            color
-            duration
-        )
-        |> Task.perform identity
-
-
-userNameFromId : List User -> Int -> String
-userNameFromId users id =
-    List.filter (\user -> user.id == id) users
-        |> List.head
-        |> Maybe.withDefault nullUser
-        |> .name
-
-
-userIdFromName : String -> List User -> Int
-userIdFromName name users =
-    List.filter (\user -> user.name == name) users
-        |> List.head
-        |> Maybe.withDefault nullUser
-        |> .id
-
-
-deleteCmd : Int -> Time.Time -> Cmd Msg
-deleteCmd id duration =
-    Process.sleep (duration * Time.second)
-        |> Task.perform
-            (\_ -> DeleteFlashElement id duration)
+            Update.Utils.receiveMessage model message
