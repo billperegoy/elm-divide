@@ -9,10 +9,10 @@ import Html.Attributes exposing (..)
 
 import Model exposing (..)
 import User exposing (..)
-import Header
-import Flash
-import MyTickets
-import RemainingTickets
+import View.Header as Header
+import View.Flash as Flash
+import View.MyTickets as MyTickets
+import View.RemainingTickets as RemainingTickets
 
 
 view : Model -> Html Msg

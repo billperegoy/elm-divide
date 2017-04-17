@@ -1,4 +1,4 @@
-module TicketDecoder exposing (httpRequest)
+module TicketDecoder exposing (httpRequest, decoder)
 
 import Http
 import Json.Decode

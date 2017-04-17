@@ -3,7 +3,6 @@ module Update exposing (update)
 import Array
 import Json.Encode
 import Json.Decode
-import Json.Decode.Pipeline
 import Phoenix.Channel
 import Phoenix.Push
 import Phoenix.Socket
@@ -18,6 +17,7 @@ import Time
 import Model exposing (..)
 import Ticket exposing (..)
 import User exposing (..)
+import TicketDecoder
 import Utils
 
 
@@ -159,7 +159,7 @@ update msg model =
             let
                 updatedTicket =
                     Json.Encode.encode 0 message
-                        |> Json.Decode.decodeString ticketDecoder
+                        |> Json.Decode.decodeString TicketDecoder.decoder
                         |> Result.withDefault nullTicket
 
                 newTickets =
@@ -225,13 +225,3 @@ deleteCmd id duration =
     Process.sleep (duration * Time.second)
         |> Task.perform
             (\_ -> DeleteFlashElement id duration)
-
-
-ticketDecoder : Json.Decode.Decoder Ticket
-ticketDecoder =
-    Json.Decode.Pipeline.decode Ticket
-        |> Json.Decode.Pipeline.required "id" Json.Decode.int
-        |> Json.Decode.Pipeline.required "date" Json.Decode.string
-        |> Json.Decode.Pipeline.required "opponent" Json.Decode.string
-        |> Json.Decode.Pipeline.required "time" Json.Decode.string
-        |> Json.Decode.Pipeline.required "user_id" (Json.Decode.nullable Json.Decode.int)
