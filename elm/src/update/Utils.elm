@@ -142,6 +142,7 @@ phoenixMsg model msg =
         )
 
 
+joinChannel : Model -> ( Model, Cmd Msg )
 joinChannel model =
     let
         channel =
@@ -155,6 +156,7 @@ joinChannel model =
         )
 
 
+sendMessage : Model -> Int -> Int -> ( Model, Cmd Msg )
 sendMessage model ticketId userId =
     let
         payload =
@@ -175,6 +177,7 @@ sendMessage model ticketId userId =
             ! [ Cmd.map PhoenixMsg phxCmd ]
 
 
+receiveMessage : Model -> Json.Encode.Value -> ( Model, Cmd Msg )
 receiveMessage model message =
     let
         updatedTicket =
