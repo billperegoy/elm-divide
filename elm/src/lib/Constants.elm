@@ -1,4 +1,10 @@
-module Constants exposing (urlBase, wsBase)
+module Constants
+    exposing
+        ( urlBase
+        , wsBase
+        , phoenixTopic
+        , selectTicketEvent
+        )
 
 
 useHeroku : Bool
@@ -28,3 +34,13 @@ wsBase =
         "wss://" ++ hostName
     else
         "ws://" ++ hostName
+
+
+phoenixTopic : String
+phoenixTopic =
+    "dividasaurus:tickets"
+
+
+selectTicketEvent : String
+selectTicketEvent =
+    "ticket_select"

@@ -1,6 +1,6 @@
 module Update exposing (update)
 
-import Update.Utils exposing (..)
+import Update.Actions as Actions exposing (..)
 
 
 --
@@ -12,40 +12,40 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         NextUser ->
-            Update.Utils.nextUser model
+            Actions.nextUser model
 
         UpdateUserInputField text ->
-            Update.Utils.updateUserInputField model text
+            Actions.updateUserInputField model text
 
         SubmitUserInputField ->
-            Update.Utils.submitUserInputField model
+            Actions.submitUserInputField model
 
         CreateFlashElement text color duration ->
-            Update.Utils.createFlashElementAction model text color duration
+            Actions.createFlashElementAction model text color duration
 
         DeleteFlashElement id time ->
-            Update.Utils.deleteFlashElement model id time
+            Actions.deleteFlashElement model id time
 
         ProcessTicketRequest (Ok tickets) ->
-            Update.Utils.processValidTicketRequest model tickets
+            Actions.processValidTicketRequest model tickets
 
         ProcessTicketRequest (Err error) ->
-            Update.Utils.processErrorTicketRequest model error
+            Actions.processError model error
 
         ProcessUserRequest (Ok users) ->
-            Update.Utils.processValidUserRequest model users
+            Actions.processValidUserRequest model users
 
         ProcessUserRequest (Err error) ->
-            Update.Utils.processErrorUserRequest model error
+            Actions.processError model error
 
         PhoenixMsg msg ->
-            Update.Utils.phoenixMsg model msg
+            Actions.phoenixMsg model msg
 
         JoinChannel ->
-            Update.Utils.joinChannel model
+            Actions.joinChannel model
 
         SendMessage ticketId userId ->
-            Update.Utils.sendMessage model ticketId userId
+            Actions.sendMessage model ticketId userId
 
         ReceiveMessage message ->
-            Update.Utils.receiveMessage model message
+            Actions.receiveMessage model message

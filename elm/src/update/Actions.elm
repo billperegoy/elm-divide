@@ -1,4 +1,4 @@
-module Update.Utils exposing (..)
+module Update.Actions exposing (..)
 
 import Array
 import Json.Encode
@@ -20,6 +20,7 @@ import Ticket exposing (..)
 import User exposing (..)
 import TicketDecoder
 import Utils
+import Constants
 
 
 nextUser : Model -> ( Model, Cmd Msg )
@@ -105,15 +106,6 @@ processValidTicketRequest model tickets =
     { model | tickets = tickets } ! []
 
 
-processErrorTicketRequest : Model -> Http.Error -> ( Model, Cmd Msg )
-processErrorTicketRequest model error =
-    let
-        errorString =
-            error |> toString |> String.slice 0 120
-    in
-        { model | systemError = errorString } ! []
-
-
 processValidUserRequest : Model -> List User -> ( Model, Cmd Msg )
 processValidUserRequest model users =
     { model
@@ -122,11 +114,13 @@ processValidUserRequest model users =
         ! []
 
 
-processErrorUserRequest : Model -> Http.Error -> ( Model, Cmd Msg )
-processErrorUserRequest model error =
+processError : Model -> Http.Error -> ( Model, Cmd Msg )
+processError model error =
     let
         errorString =
-            error |> toString |> String.slice 0 120
+            error
+                |> toString
+                |> String.slice 0 120
     in
         { model | systemError = errorString } ! []
 
@@ -146,7 +140,7 @@ joinChannel : Model -> ( Model, Cmd Msg )
 joinChannel model =
     let
         channel =
-            Phoenix.Channel.init "dividasaurus:tickets"
+            Phoenix.Channel.init Constants.phoenixTopic
 
         ( phxSocket, phxCmd ) =
             Phoenix.Socket.join channel model.phxSocket
@@ -167,7 +161,7 @@ sendMessage model ticketId userId =
             )
 
         push_ =
-            Phoenix.Push.init "ticket_select" "dividasaurus:tickets"
+            Phoenix.Push.init Constants.selectTicketEvent Constants.phoenixTopic
                 |> Phoenix.Push.withPayload payload
 
         ( phxSocket, phxCmd ) =

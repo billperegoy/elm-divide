@@ -62,4 +62,4 @@ initPhoenixSocket : Phoenix.Socket.Socket Msg
 initPhoenixSocket =
     Phoenix.Socket.init (Constants.wsBase ++ "/socket/websocket")
         |> Phoenix.Socket.withDebug
-        |> Phoenix.Socket.on "ticket_select" "dividasaurus:tickets" ReceiveMessage
+        |> Phoenix.Socket.on Constants.selectTicketEvent Constants.phoenixTopic ReceiveMessage
