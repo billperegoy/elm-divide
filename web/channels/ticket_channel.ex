@@ -15,6 +15,7 @@ defmodule Dividasaurus.TicketChannel do
      case result do
        {:ok, _} ->
          ticket = Repo.get(Ticket, ticket_id)
+                    |> Map.drop(ticket, [:user])
          broadcast! socket, "ticket_select", ticket 
        {:error, result} ->
          IO.puts "Update failed: #{inspect result.errors}"
