@@ -7,6 +7,7 @@ import Update
 import View
 import TicketDecoder
 import UserDecoder
+import GroupDecoder
 import Utils
 
 
@@ -15,7 +16,11 @@ main =
     Html.program
         { init =
             Model.init
-                ! [ TicketDecoder.httpRequest, UserDecoder.httpRequest, Utils.joinChannel ]
+                ! [ TicketDecoder.httpRequest
+                  , UserDecoder.httpRequest
+                  , GroupDecoder.httpRequest
+                  , Utils.joinChannel
+                  ]
         , view = View.view
         , update = Update.update
         , subscriptions = Subscriptions.subscriptions

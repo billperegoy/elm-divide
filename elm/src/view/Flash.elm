@@ -51,8 +51,7 @@ userPlusButton model =
         , h3 []
             [ span [ class "label label-default" ]
                 [ text
-                    ("Up Now: " ++ (Utils.userField model model.currentUser .name))
+                    ("Up Now: " ++ (Utils.currentUserName model))
                 ]
             ]
-        , button [ class "btn btn-default", Utils.onClickNoDefault NextUser ] [ text "Next User" ]
         ]

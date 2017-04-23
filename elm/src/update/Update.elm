@@ -11,9 +11,6 @@ import Model exposing (..)
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        NextUser ->
-            Actions.nextUser model
-
         UpdateUserInputField text ->
             Actions.updateUserInputField model text
 
@@ -36,6 +33,12 @@ update msg model =
             Actions.processValidUserRequest model users
 
         ProcessUserRequest (Err error) ->
+            Actions.processError model error
+
+        ProcessGroupRequest (Ok groups) ->
+            Actions.processValidGroupRequest model groups
+
+        ProcessGroupRequest (Err error) ->
             Actions.processError model error
 
         PhoenixMsg msg ->

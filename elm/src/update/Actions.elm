@@ -18,9 +18,14 @@ import Http
 import Model exposing (..)
 import Ticket exposing (..)
 import User exposing (..)
+import Group exposing (..)
 import TicketDecoder
 import Utils
 import Constants
+
+
+-- FIXME - This logic needs to be repuposed in the action that gets the current
+-- user from the backend. It's currently unused.
 
 
 nextUser : Model -> ( Model, Cmd Msg )
@@ -112,6 +117,18 @@ processValidUserRequest model users =
         | users = Array.fromList users
     }
         ! []
+
+
+processValidGroupRequest : Model -> List Group -> ( Model, Cmd Msg )
+processValidGroupRequest model groups =
+    let
+        activeUser =
+            List.filter (\group -> group.name == model.groupName) groups
+                |> List.head
+                |> Maybe.withDefault nullGroup
+                |> .activeUser
+    in
+        { model | currentUser = activeUser } ! []
 
 
 processError : Model -> Http.Error -> ( Model, Cmd Msg )

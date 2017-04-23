@@ -16,6 +16,16 @@ userField model index extractor =
         |> extractor
 
 
+currentUserName : Model -> String
+currentUserName model =
+    model.users
+        |> Array.toList
+        |> List.filter (\user -> user.id == model.currentUser)
+        |> List.head
+        |> Maybe.withDefault nullUser
+        |> .name
+
+
 joinChannel : Cmd Msg
 joinChannel =
     Task.succeed JoinChannel |> Task.perform identity

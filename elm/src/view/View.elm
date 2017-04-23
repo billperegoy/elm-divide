@@ -1,6 +1,5 @@
 module View exposing (view)
 
-import Array
 import Html exposing (..)
 import Html.Attributes exposing (..)
 
@@ -8,7 +7,6 @@ import Html.Attributes exposing (..)
 --
 
 import Model exposing (..)
-import User exposing (..)
 import View.Header as Header
 import View.Flash as Flash
 import View.MyTickets as MyTickets
@@ -29,10 +27,4 @@ view model =
 
 myTurn : Model -> Bool
 myTurn model =
-    let
-        currentUserName =
-            Array.get model.currentUser model.users
-                |> Maybe.withDefault nullUser
-                |> .name
-    in
-        currentUserName == model.myUserName
+    model.currentUser == model.myUserId

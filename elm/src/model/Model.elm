@@ -13,6 +13,7 @@ import Constants
 import FlashElement
 import User exposing (..)
 import Ticket exposing (..)
+import Group exposing (..)
 
 
 type alias Model =
@@ -33,11 +34,11 @@ type alias Model =
 type Msg
     = CreateFlashElement String String Time.Time
     | DeleteFlashElement Int Time.Time
-    | NextUser
     | UpdateUserInputField String
     | SubmitUserInputField
     | ProcessTicketRequest (Result Http.Error (List Ticket))
     | ProcessUserRequest (Result Http.Error (List User))
+    | ProcessGroupRequest (Result Http.Error (List Group))
     | PhoenixMsg (Phoenix.Socket.Msg Msg)
     | JoinChannel
     | SendMessage Int Int
