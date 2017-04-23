@@ -19,6 +19,7 @@ import Ticket exposing (..)
 import User exposing (..)
 import Group exposing (..)
 import TicketDecoder
+import ActiveUserDecoder
 import Constants
 
 
@@ -186,8 +187,8 @@ sendMessage model ticketId userId =
             ! [ Cmd.map PhoenixMsg phxCmd ]
 
 
-receiveMessage : Model -> Json.Encode.Value -> ( Model, Cmd Msg )
-receiveMessage model message =
+receiveTicketMessage : Model -> Json.Encode.Value -> ( Model, Cmd Msg )
+receiveTicketMessage model message =
     let
         updatedTicket =
             Json.Encode.encode 0 message
@@ -223,6 +224,22 @@ receiveMessage model message =
         { model | tickets = newTickets }
             ! [ createFlashElement flashString "info" 20
               ]
+
+
+receiveActiveUserMessage : Model -> Json.Encode.Value -> ( Model, Cmd Msg )
+receiveActiveUserMessage model message =
+    let
+        activeUser =
+            Json.Encode.encode 0 message
+                |> Json.Decode.decodeString ActiveUserDecoder.decoder
+                |> Result.withDefault ActiveUserDecoder.nullActiveUser
+                |> .id
+
+        nextUserName =
+            userNameFromId model.users activeUser
+    in
+        { model | currentUser = activeUser }
+            ! [ createFlashElement ("Next user is " ++ nextUserName) "info" 20 ]
 
 
 userNameFromId : List User -> Int -> String

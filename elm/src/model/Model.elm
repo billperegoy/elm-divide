@@ -41,7 +41,8 @@ type Msg
     | PhoenixMsg (Phoenix.Socket.Msg Msg)
     | JoinChannel
     | SendMessage Int Int
-    | ReceiveMessage Json.Encode.Value
+    | ReceiveTicketMessage Json.Encode.Value
+    | ReceiveActiveUserMessage Json.Encode.Value
 
 
 init : Model
@@ -64,4 +65,11 @@ initPhoenixSocket : Phoenix.Socket.Socket Msg
 initPhoenixSocket =
     Phoenix.Socket.init (Constants.wsBase ++ "/socket/websocket")
         |> Phoenix.Socket.withDebug
-        |> Phoenix.Socket.on Constants.selectTicketEvent Constants.phoenixTopic ReceiveMessage
+        |> Phoenix.Socket.on
+            Constants.selectTicketEvent
+            Constants.phoenixTopic
+            ReceiveTicketMessage
+        |> Phoenix.Socket.on
+            Constants.activeUserEvent
+            Constants.phoenixTopic
+            ReceiveActiveUserMessage

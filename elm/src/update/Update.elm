@@ -50,5 +50,8 @@ update msg model =
         SendMessage ticketId userId ->
             Actions.sendMessage model ticketId userId
 
-        ReceiveMessage message ->
-            Actions.receiveMessage model message
+        ReceiveTicketMessage message ->
+            Actions.receiveTicketMessage model message
+
+        ReceiveActiveUserMessage message ->
+            Actions.receiveActiveUserMessage model message

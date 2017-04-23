@@ -4,6 +4,7 @@ module Constants
         , wsBase
         , phoenixTopic
         , selectTicketEvent
+        , activeUserEvent
         )
 
 
@@ -44,3 +45,8 @@ phoenixTopic =
 selectTicketEvent : String
 selectTicketEvent =
     "ticket_select"
+
+
+activeUserEvent : String
+activeUserEvent =
+    "active_user"
