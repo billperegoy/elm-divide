@@ -1,6 +1,5 @@
 module Model exposing (..)
 
-import Array
 import Http
 import Json.Encode
 import Phoenix.Socket
@@ -21,7 +20,7 @@ type alias Model =
     , tickets : List Ticket
     , flashElements : List FlashElement.FlashElement
     , nextId : Int
-    , users : Array.Array User
+    , users : List User
     , currentUser : Int
     , myUserId : Int
     , myUserName : String
@@ -51,7 +50,7 @@ init =
     , tickets = []
     , flashElements = []
     , nextId = 0
-    , users = Array.fromList []
+    , users = []
     , currentUser = 0
     , myUserId = -1
     , myUserName = ""

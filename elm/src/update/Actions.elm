@@ -1,6 +1,5 @@
 module Update.Actions exposing (..)
 
-import Array
 import Json.Encode
 import Json.Decode
 import Phoenix.Channel
@@ -20,7 +19,6 @@ import Ticket exposing (..)
 import User exposing (..)
 import Group exposing (..)
 import TicketDecoder
-import Utils
 import Constants
 
 
@@ -32,7 +30,7 @@ nextUser : Model -> ( Model, Cmd Msg )
 nextUser model =
     let
         length =
-            Array.length model.users
+            List.length model.users
 
         nextUser =
             if model.currentUser == (length - 1) then
@@ -41,7 +39,7 @@ nextUser model =
                 model.currentUser + 1
 
         nextUserName =
-            Utils.userField model nextUser .name
+            "Who Knows"
 
         color =
             if nextUserName == model.myUserName then
@@ -67,7 +65,7 @@ submitUserInputField model =
     { model
         | myUserName = model.userInputField
         , userInputField = ""
-        , myUserId = userIdFromName model.userInputField (Array.toList model.users)
+        , myUserId = userIdFromName model.userInputField model.users
     }
         ! []
 
@@ -114,7 +112,7 @@ processValidTicketRequest model tickets =
 processValidUserRequest : Model -> List User -> ( Model, Cmd Msg )
 processValidUserRequest model users =
     { model
-        | users = Array.fromList users
+        | users = users
     }
         ! []
 
@@ -211,7 +209,7 @@ receiveMessage model message =
 
         gameOwner =
             userNameFromId
-                (model.users |> Array.toList)
+                model.users
                 (updatedTicket.userId |> Maybe.withDefault -1)
 
         flashString =

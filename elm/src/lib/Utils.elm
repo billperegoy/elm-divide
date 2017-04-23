@@ -5,21 +5,12 @@ import Html.Events exposing (..)
 import Json.Decode
 import Model exposing (..)
 import User exposing (..)
-import Array
 import Task
-
-
-userField : Model -> Int -> (User -> a) -> a
-userField model index extractor =
-    Array.get index model.users
-        |> Maybe.withDefault nullUser
-        |> extractor
 
 
 currentUserName : Model -> String
 currentUserName model =
     model.users
-        |> Array.toList
         |> List.filter (\user -> user.id == model.currentUser)
         |> List.head
         |> Maybe.withDefault nullUser
