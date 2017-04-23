@@ -16,7 +16,8 @@ import Ticket exposing (..)
 
 
 type alias Model =
-    { tickets : List Ticket
+    { groupName : String
+    , tickets : List Ticket
     , flashElements : List FlashElement.FlashElement
     , nextId : Int
     , users : Array.Array User
@@ -45,7 +46,8 @@ type Msg
 
 init : Model
 init =
-    { tickets = []
+    { groupName = "My Group"
+    , tickets = []
     , flashElements = []
     , nextId = 0
     , users = Array.fromList []

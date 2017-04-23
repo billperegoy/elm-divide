@@ -16,8 +16,6 @@ group = Repo.insert! %Group{ name: "My Group", active_user: nil }
 first_user = Repo.insert! %User{ name: "Bill", role: "User", group_id: group.id }
 Repo.insert! %User{ name: "Joe", role: "User", group_id: group.id }
 Repo.insert! %User{ name: "John", role: "User", group_id: group.id }
-Repo.insert! %User{ name: "Kelly", role: "User", group_id: nil }
-Repo.insert! %User{ name: "Dave", role: "User", group_id: nil }
 
 group = Repo.get_by(Group, name: "My Group")
 group
