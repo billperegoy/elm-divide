@@ -15,6 +15,10 @@ view model =
                 [ class "alert alert-danger" ]
     in
         div []
-            [ div [ class "jumbotron text-center" ] [ h1 [] [ text "Dividasaurus" ] ]
-            , div errorAttributes [ text model.systemError ]
+            [ div
+                [ class "jumbotron text-center" ]
+                [ h1 [] [ text "Dividasaurus" ] ]
+            , div
+                errorAttributes
+                [ text model.systemError ]
             ]

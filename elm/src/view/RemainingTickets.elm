@@ -2,18 +2,20 @@ module View.RemainingTickets exposing (view)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Ticket exposing (..)
 import Model exposing (..)
 import View.TicketHelper exposing (..)
 
 
-view : List Ticket -> String -> Int -> Bool -> Html Msg
-view tickets groupName myUserId myTurn =
+view : Model -> Html Msg
+view model =
     let
+        myTurn =
+            model.currentUser == model.myUserId
+
         remainingTickets =
             (List.filter
                 (\ticket -> ticket.userId == Nothing)
-                tickets
+                model.tickets
             )
 
         remainingCount =
@@ -28,6 +30,6 @@ view tickets groupName myUserId myTurn =
                 ]
             , div []
                 (remainingTickets
-                    |> ticketList groupName myUserId myTurn
+                    |> ticketList model.groupName model.myUserId myTurn
                 )
             ]
