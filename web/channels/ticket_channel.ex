@@ -40,6 +40,15 @@ defmodule Dividasaurus.TicketChannel do
     broadcast! socket, "active_user", %{id: new_active_user}
   end
 
+  defp update_active_user(group_name) do
+    new_active_user = get_next_active_user(group_name)
+    active_user = Repo.get_by(Group, name: group_name)
+                  |> Dividasaurus.Group.changeset(%{"active_user" => new_active_user})
+                  |> Repo.update
+
+    new_active_user
+  end
+
   defp get_next_active_user(group_name) do
     active_user = Repo.get_by(Group, name: group_name)
                   |> Map.get(:active_user)
@@ -57,14 +66,5 @@ defmodule Dividasaurus.TicketChannel do
     else
       0
     end
-  end
-
-  defp update_active_user(group_name) do
-    new_active_user = get_next_active_user(group_name)
-    active_user = Repo.get_by(Group, name: group_name)
-                  |> Dividasaurus.Group.changeset(%{"active_user" => new_active_user})
-                  |> Repo.update
-
-    new_active_user
   end
 end
