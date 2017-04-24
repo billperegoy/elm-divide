@@ -8,6 +8,7 @@ type alias Group =
     }
 
 
+nullGroup : Group
 nullGroup =
     { id = -1
     , name = "Null Group"
