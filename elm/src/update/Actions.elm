@@ -23,39 +23,6 @@ import ActiveUserDecoder
 import Constants
 
 
--- FIXME - This logic needs to be repuposed in the action that gets the current
--- user from the backend. It's currently unused.
-
-
-nextUser : Model -> ( Model, Cmd Msg )
-nextUser model =
-    let
-        length =
-            List.length model.users
-
-        nextUser =
-            if model.currentUser == (length - 1) then
-                0
-            else
-                model.currentUser + 1
-
-        nextUserName =
-            "Who Knows"
-
-        color =
-            if nextUserName == model.myUserName then
-                "danger"
-            else
-                "info"
-    in
-        { model | currentUser = nextUser }
-            ! [ createFlashElement
-                    (nextUserName ++ "'s turn")
-                    color
-                    20
-              ]
-
-
 updateUserInputField : Model -> String -> ( Model, Cmd Msg )
 updateUserInputField model text =
     { model | userInputField = text } ! []
@@ -237,9 +204,15 @@ receiveActiveUserMessage model message =
 
         nextUserName =
             userNameFromId model.users activeUser
+
+        color =
+            if nextUserName == model.myUserName then
+                "danger"
+            else
+                "info"
     in
         { model | currentUser = activeUser }
-            ! [ createFlashElement ("Next user is " ++ nextUserName) "info" 20 ]
+            ! [ createFlashElement ("Next user is " ++ nextUserName) color 20 ]
 
 
 userNameFromId : List User -> Int -> String
