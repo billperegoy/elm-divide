@@ -19,7 +19,7 @@ view model =
         [ Header.view model
         , div [ class "row" ]
             [ Flash.view model
-            , RemainingTickets.view model.tickets model.myUserId (myTurn model)
+            , RemainingTickets.view model.tickets model.groupName model.myUserId (myTurn model)
             , MyTickets.view model
             ]
         ]

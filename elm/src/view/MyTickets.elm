@@ -25,6 +25,6 @@ view model =
                 ]
             , div []
                 (myTickets
-                    |> ticketList model.myUserId False
+                    |> ticketList model.groupName model.myUserId False
                 )
             ]

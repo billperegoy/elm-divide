@@ -40,7 +40,7 @@ type Msg
     | ProcessGroupRequest (Result Http.Error (List Group))
     | PhoenixMsg (Phoenix.Socket.Msg Msg)
     | JoinChannel
-    | SendMessage Int Int
+    | SendMessage Int Int String
     | ReceiveTicketMessage Json.Encode.Value
     | ReceiveActiveUserMessage Json.Encode.Value
 

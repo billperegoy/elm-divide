@@ -7,8 +7,8 @@ import Model exposing (..)
 import View.TicketHelper exposing (..)
 
 
-view : List Ticket -> Int -> Bool -> Html Msg
-view tickets myUserId myTurn =
+view : List Ticket -> String -> Int -> Bool -> Html Msg
+view tickets groupName myUserId myTurn =
     let
         remainingTickets =
             (List.filter
@@ -28,6 +28,6 @@ view tickets myUserId myTurn =
                 ]
             , div []
                 (remainingTickets
-                    |> ticketList myUserId myTurn
+                    |> ticketList groupName myUserId myTurn
                 )
             ]

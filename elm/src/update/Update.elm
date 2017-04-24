@@ -47,8 +47,8 @@ update msg model =
         JoinChannel ->
             Actions.joinChannel model
 
-        SendMessage ticketId userId ->
-            Actions.sendMessage model ticketId userId
+        SendMessage ticketId userId groupName ->
+            Actions.sendMessage model ticketId userId groupName
 
         ReceiveTicketMessage message ->
             Actions.receiveTicketMessage model message

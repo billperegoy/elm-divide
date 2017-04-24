@@ -7,15 +7,15 @@ import Model exposing (..)
 import Utils
 
 
-ticketList : Int -> Bool -> List Ticket -> List (Html Msg)
-ticketList myUserId myTurn tickets =
+ticketList : String -> Int -> Bool -> List Ticket -> List (Html Msg)
+ticketList groupName myUserId myTurn tickets =
     List.map
-        (\ticket -> singleTicket ticket myUserId myTurn)
+        (\ticket -> singleTicket groupName ticket myUserId myTurn)
         tickets
 
 
-singleTicket : Ticket -> Int -> Bool -> Html Msg
-singleTicket ticket myUserId myTurn =
+singleTicket : String -> Ticket -> Int -> Bool -> Html Msg
+singleTicket groupName ticket myUserId myTurn =
     let
         innerDiv =
             div [ class "panel panel-default" ]
@@ -27,7 +27,7 @@ singleTicket ticket myUserId myTurn =
                 ]
     in
         if myTurn then
-            a [ Utils.onClickNoDefault (SendMessage ticket.id myUserId), href "#" ]
+            a [ Utils.onClickNoDefault (SendMessage ticket.id myUserId groupName), href "#" ]
                 [ innerDiv
                 ]
         else

@@ -9,7 +9,8 @@ defmodule Dividasaurus.TicketChannel do
     {:ok, socket}
   end
 
-  def handle_in("ticket_select", %{"user_id" => user_id, "ticket_id" => ticket_id}, socket) do
+  def handle_in("ticket_select",
+                %{"user_id" => user_id, "ticket_id" => ticket_id, "group_name" => group_name}, socket) do
     result = Repo.get(Ticket, ticket_id)
              |> Dividasaurus.Ticket.changeset(%{"user_id" => user_id})
              |> Repo.update
@@ -17,7 +18,7 @@ defmodule Dividasaurus.TicketChannel do
      case result do
        {:ok, _} ->
          broadcast_updated_ticket(socket, ticket_id)
-         broadcast_new_active_user(socket, "My Group")
+         broadcast_new_active_user(socket, group_name)
 
        {:error, result} ->
          IO.puts "Update failed: #{inspect result.errors}"

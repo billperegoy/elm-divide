@@ -133,13 +133,14 @@ joinChannel model =
         )
 
 
-sendMessage : Model -> Int -> Int -> ( Model, Cmd Msg )
-sendMessage model ticketId userId =
+sendMessage : Model -> Int -> Int -> String -> ( Model, Cmd Msg )
+sendMessage model ticketId userId groupName =
     let
         payload =
             (Json.Encode.object
                 [ ( "user_id", Json.Encode.int userId )
                 , ( "ticket_id", Json.Encode.int ticketId )
+                , ( "group_name", Json.Encode.string groupName )
                 ]
             )
 
