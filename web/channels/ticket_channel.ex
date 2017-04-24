@@ -16,19 +16,27 @@ defmodule Dividasaurus.TicketChannel do
 
      case result do
        {:ok, _} ->
-         # Return the updated ticket to all clients
-         ticket = Repo.get(Ticket, ticket_id)
-                    |> Map.drop([:user])
-         broadcast! socket, "ticket_select", ticket 
+         broadcast_updated_ticket(socket, ticket_id)
+         broadcast_new_active_user(socket, "My Group")
 
-         # Return the updated active user to all clients
-         new_active_user = update_active_user("My Group")
-         broadcast! socket, "active_user", %{id: new_active_user}
        {:error, result} ->
          IO.puts "Update failed: #{inspect result.errors}"
      end
 
     {:noreply, socket}
+  end
+
+  defp broadcast_updated_ticket(socket, ticket_id) do
+    # Return the updated ticket to all clients
+    ticket = Repo.get(Ticket, ticket_id)
+             |> Map.drop([:user])
+    broadcast! socket, "ticket_select", ticket 
+  end
+
+  defp broadcast_new_active_user(socket, groupName) do
+    # Return the updated active user to all clients
+    new_active_user = update_active_user(groupName)
+    broadcast! socket, "active_user", %{id: new_active_user}
   end
 
   defp get_next_active_user(group_name) do
