@@ -9,7 +9,7 @@ import Utils
 
 view : Model -> Html Msg
 view model =
-    div [ class "col-md-2" ]
+    div []
         ((login model))
 
 
