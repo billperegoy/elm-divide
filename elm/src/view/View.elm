@@ -8,6 +8,7 @@ import Html.Attributes exposing (..)
 
 import Model exposing (..)
 import View.Header as Header
+import View.Login as Login
 import View.Flash as Flash
 import View.MyTickets as MyTickets
 import View.RemainingTickets as RemainingTickets
@@ -18,7 +19,10 @@ view model =
     div [ class "container" ]
         [ Header.view model
         , div [ class "row" ]
-            [ Flash.view model
+            [ div [ class "col-md-2" ]
+                [ Login.view model
+                , Flash.view model
+                ]
             , RemainingTickets.view model
             , MyTickets.view model
             ]
