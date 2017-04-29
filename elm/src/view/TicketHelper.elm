@@ -27,7 +27,11 @@ singleTicket groupName ticket myUserId myTurn =
                 ]
     in
         if myTurn then
-            a [ Utils.onClickNoDefault (SendMessage ticket.id myUserId groupName), href "#" ]
+            a
+                [ Utils.onClickNoDefault
+                    (SendMessage ticket.id myUserId groupName)
+                , href "#"
+                ]
                 [ innerDiv
                 ]
         else

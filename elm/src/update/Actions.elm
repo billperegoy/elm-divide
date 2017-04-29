@@ -1,12 +1,10 @@
 module Update.Actions exposing (..)
 
-import Json.Encode
-import Json.Decode
+import Json.Encode as Encode
 import Phoenix.Channel
 import Phoenix.Push
 import Phoenix.Socket
 import Process
-import Result
 import Task
 import Time
 import Http
@@ -21,6 +19,8 @@ import Group exposing (..)
 import TicketDecoder
 import ActiveUserDecoder
 import Constants
+import Ticket.Utils
+import User.Utils
 
 
 updateUserInputField : Model -> String -> ( Model, Cmd Msg )
@@ -137,10 +137,10 @@ sendMessage : Model -> Int -> Int -> String -> ( Model, Cmd Msg )
 sendMessage model ticketId userId groupName =
     let
         payload =
-            (Json.Encode.object
-                [ ( "user_id", Json.Encode.int userId )
-                , ( "ticket_id", Json.Encode.int ticketId )
-                , ( "group_name", Json.Encode.string groupName )
+            (Encode.object
+                [ ( "user_id", Encode.int userId )
+                , ( "ticket_id", Encode.int ticketId )
+                , ( "group_name", Encode.string groupName )
                 ]
             )
 
@@ -155,56 +155,35 @@ sendMessage model ticketId userId groupName =
             ! [ Cmd.map PhoenixMsg phxCmd ]
 
 
-receiveTicketMessage : Model -> Json.Encode.Value -> ( Model, Cmd Msg )
+receiveTicketMessage : Model -> Encode.Value -> ( Model, Cmd Msg )
 receiveTicketMessage model message =
     let
-        updatedTicket =
-            Json.Encode.encode 0 message
-                |> Json.Decode.decodeString TicketDecoder.decoder
-                |> Result.withDefault nullTicket
+        ticket =
+            TicketDecoder.fromEncodeValue message
 
         newTickets =
-            List.map
-                (\ticket ->
-                    if ticket.id == updatedTicket.id then
-                        updatedTicket
-                    else
-                        ticket
-                )
-                model.tickets
+            Ticket.Utils.update ticket model.tickets
 
-        gameDate =
-            updatedTicket.date
-
-        gameOwner =
-            userNameFromId
-                model.users
-                (updatedTicket.userId |> Maybe.withDefault -1)
+        owner =
+            User.Utils.nameFromId model.users ticket.userId
 
         flashString =
-            gameOwner
-                ++ " chose "
-                ++ gameDate
-                ++ " ("
-                ++ updatedTicket.opponent
-                ++ ")"
+            Ticket.Utils.selectMessage ticket owner
     in
         { model | tickets = newTickets }
             ! [ createFlashElement flashString "info" 20
               ]
 
 
-receiveActiveUserMessage : Model -> Json.Encode.Value -> ( Model, Cmd Msg )
+receiveActiveUserMessage : Model -> Encode.Value -> ( Model, Cmd Msg )
 receiveActiveUserMessage model message =
     let
         activeUser =
-            Json.Encode.encode 0 message
-                |> Json.Decode.decodeString ActiveUserDecoder.decoder
-                |> Result.withDefault ActiveUserDecoder.nullActiveUser
+            ActiveUserDecoder.fromEncodeValue message
                 |> .id
 
         nextUserName =
-            userNameFromId model.users activeUser
+            User.Utils.nameFromId model.users (Just activeUser)
 
         color =
             if nextUserName == model.myUserName then
@@ -214,14 +193,6 @@ receiveActiveUserMessage model message =
     in
         { model | currentUser = activeUser }
             ! [ createFlashElement ("Next user is " ++ nextUserName) color 20 ]
-
-
-userNameFromId : List User -> Int -> String
-userNameFromId users id =
-    List.filter (\user -> user.id == id) users
-        |> List.head
-        |> Maybe.withDefault nullUser
-        |> .name
 
 
 deleteCmd : Int -> Time.Time -> Cmd Msg

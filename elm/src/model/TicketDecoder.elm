@@ -1,7 +1,13 @@
-module TicketDecoder exposing (httpRequest, decoder)
+module TicketDecoder
+    exposing
+        ( httpRequest
+        , decoder
+        , fromEncodeValue
+        )
 
 import Http
 import Json.Decode
+import Json.Encode
 import Json.Decode.Pipeline
 
 
@@ -24,6 +30,13 @@ httpRequest =
 listDecoder : Json.Decode.Decoder (List Ticket)
 listDecoder =
     Json.Decode.list decoder
+
+
+fromEncodeValue : Json.Encode.Value -> Ticket
+fromEncodeValue value =
+    Json.Encode.encode 0 value
+        |> Json.Decode.decodeString decoder
+        |> Result.withDefault nullTicket
 
 
 decoder : Json.Decode.Decoder Ticket
