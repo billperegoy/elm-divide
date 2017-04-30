@@ -7,5 +7,6 @@ defmodule Dividasaurus.Repo.Migrations.CreateUser do
       add :role, :string
       timestamps
     end
+    create unique_index(:users, [:name])
   end
 end

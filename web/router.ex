@@ -23,6 +23,7 @@ defmodule Dividasaurus.Router do
     pipe_through :api
     get "/groups", GroupController, :index
     get "/users", UserController, :index
+    post "/users", UserController, :create
     get "/tickets", TicketController, :index
   end
 end
