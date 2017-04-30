@@ -11,7 +11,7 @@ defmodule Dividasaurus.User do
 
   def changeset(model, params \\ :empty) do
     model
-      |> cast(params, [:name])
+      |> cast(params, [:name, :role])
       |> Map.drop([:group])
       |> unique_constraint(:name)
   end

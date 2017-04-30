@@ -11,7 +11,7 @@ defmodule Dividasaurus.UserController do
     changeset = Dividasaurus.User.changeset( %Dividasaurus.User{}, params)
     case Repo.insert(changeset) do
       {:ok, user} ->
-        json conn |> put_status(:created), params
+        json conn |> put_status(:created), user |> Map.drop([:group, :tickets]) 
       {:error, _changeset} ->
         json conn |> put_status(:bad_request), %{error: "Duplicate name"}
     end
