@@ -31,7 +31,10 @@ updateUserInputField model text =
 
 createUser : Model -> ( Model, Cmd Msg )
 createUser model =
-    model ! [ UserDecoder.post model.userInputField ]
+    { model
+        | systemError = ""
+    }
+        ! [ UserDecoder.post model.userInputField ]
 
 
 loginUser : Model -> ( Model, Cmd Msg )
@@ -40,6 +43,7 @@ loginUser model =
         | myUserName = model.userInputField
         , userInputField = ""
         , myUserId = userIdFromName model.userInputField model.users
+        , systemError = ""
     }
         ! []
 
