@@ -10,7 +10,7 @@ module Constants
 
 useHeroku : Bool
 useHeroku =
-    True
+    False
 
 
 hostName : String

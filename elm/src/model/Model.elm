@@ -34,9 +34,11 @@ type Msg
     = CreateFlashElement String String Time.Time
     | DeleteFlashElement Int Time.Time
     | UpdateUserInputField String
-    | SubmitUserInputField
+    | CreateUser
+    | LoginUser
     | ProcessTicketRequest (Result Http.Error (List Ticket))
-    | ProcessUserRequest (Result Http.Error (List User))
+    | ProcessUserGet (Result Http.Error (List User))
+    | ProcessUserPost (Result Http.Error User)
     | ProcessGroupRequest (Result Http.Error (List Group))
     | PhoenixMsg (Phoenix.Socket.Msg Msg)
     | JoinChannel

@@ -16,9 +16,9 @@ main =
     Html.program
         { init =
             Model.init
-                ! [ TicketDecoder.httpRequest
-                  , UserDecoder.httpRequest
-                  , GroupDecoder.httpRequest
+                ! [ TicketDecoder.get
+                  , UserDecoder.get
+                  , GroupDecoder.get
                   , Utils.joinChannel
                   ]
         , view = View.view

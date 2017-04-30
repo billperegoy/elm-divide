@@ -29,7 +29,8 @@ login model =
                 "label label-default"
     in
         [ input [ onInput UpdateUserInputField ] []
-        , button [ Utils.onClickNoDefault SubmitUserInputField ] [ text "Login" ]
+        , button [ Utils.onClickNoDefault LoginUser ] [ text "Login" ]
+        , button [ Utils.onClickNoDefault CreateUser ] [ text "Create User" ]
         , h3 []
             [ span [ class loginClass ]
                 [ text loginText ]

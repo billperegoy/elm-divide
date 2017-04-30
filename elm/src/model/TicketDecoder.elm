@@ -1,6 +1,6 @@
 module TicketDecoder
     exposing
-        ( httpRequest
+        ( get
         , decoder
         , fromEncodeValue
         )
@@ -18,8 +18,8 @@ import Model exposing (..)
 import Ticket exposing (..)
 
 
-httpRequest : Cmd Msg
-httpRequest =
+get : Cmd Msg
+get =
     let
         url =
             Constants.urlBase ++ "/api/v1/tickets"

@@ -17,6 +17,7 @@ import Ticket exposing (..)
 import User exposing (..)
 import Group exposing (..)
 import TicketDecoder
+import UserDecoder
 import ActiveUserDecoder
 import Constants
 import Ticket.Utils
@@ -28,8 +29,13 @@ updateUserInputField model text =
     { model | userInputField = text } ! []
 
 
-submitUserInputField : Model -> ( Model, Cmd Msg )
-submitUserInputField model =
+createUser : Model -> ( Model, Cmd Msg )
+createUser model =
+    model ! [ UserDecoder.post model.userInputField ]
+
+
+loginUser : Model -> ( Model, Cmd Msg )
+loginUser model =
     { model
         | myUserName = model.userInputField
         , userInputField = ""
@@ -77,12 +83,17 @@ processValidTicketRequest model tickets =
     { model | tickets = tickets } ! []
 
 
-processValidUserRequest : Model -> List User -> ( Model, Cmd Msg )
-processValidUserRequest model users =
+processValidUserGet : Model -> List User -> ( Model, Cmd Msg )
+processValidUserGet model users =
     { model
         | users = users
     }
         ! []
+
+
+processValidUserPost : Model -> User -> ( Model, Cmd Msg )
+processValidUserPost model user =
+    model ! []
 
 
 processValidGroupRequest : Model -> List Group -> ( Model, Cmd Msg )

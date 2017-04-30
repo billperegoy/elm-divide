@@ -1,7 +1,8 @@
-module UserDecoder exposing (httpRequest)
+module UserDecoder exposing (get, post)
 
 import Http
 import Json.Decode
+import Json.Encode
 import Json.Decode.Pipeline
 
 
@@ -24,10 +25,26 @@ decoder =
         |> Json.Decode.Pipeline.required "name" Json.Decode.string
 
 
-httpRequest : Cmd Msg
-httpRequest =
+url : String
+url =
+    Constants.urlBase ++ "/api/v1/users"
+
+
+get : Cmd Msg
+get =
+    Http.send ProcessUserGet (Http.get url listDecoder)
+
+
+post : String -> Cmd Msg
+post name =
     let
-        url =
-            Constants.urlBase ++ "/api/v1/users"
+        payload =
+            Json.Encode.object
+                [ ( "name", Json.Encode.string name )
+                , ( "role", Json.Encode.string "user" )
+                ]
+
+        body =
+            Http.stringBody "application/json" (Json.Encode.encode 0 payload)
     in
-        Http.send ProcessUserRequest (Http.get url listDecoder)
+        Http.send ProcessUserPost (Http.post url body decoder)

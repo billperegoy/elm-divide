@@ -1,4 +1,4 @@
-module GroupDecoder exposing (httpRequest)
+module GroupDecoder exposing (get)
 
 import Http
 import Json.Decode
@@ -25,8 +25,8 @@ decoder =
         |> Json.Decode.Pipeline.required "active_user" Json.Decode.int
 
 
-httpRequest : Cmd Msg
-httpRequest =
+get : Cmd Msg
+get =
     let
         url =
             Constants.urlBase ++ "/api/v1/groups"

@@ -14,8 +14,11 @@ update msg model =
         UpdateUserInputField text ->
             Actions.updateUserInputField model text
 
-        SubmitUserInputField ->
-            Actions.submitUserInputField model
+        CreateUser ->
+            Actions.createUser model
+
+        LoginUser ->
+            Actions.loginUser model
 
         CreateFlashElement text color duration ->
             Actions.createFlashElementAction model text color duration
@@ -29,10 +32,16 @@ update msg model =
         ProcessTicketRequest (Err error) ->
             Actions.processError model error
 
-        ProcessUserRequest (Ok users) ->
-            Actions.processValidUserRequest model users
+        ProcessUserGet (Ok users) ->
+            Actions.processValidUserGet model users
 
-        ProcessUserRequest (Err error) ->
+        ProcessUserGet (Err error) ->
+            Actions.processError model error
+
+        ProcessUserPost (Ok user) ->
+            Actions.processValidUserPost model user
+
+        ProcessUserPost (Err error) ->
             Actions.processError model error
 
         ProcessGroupRequest (Ok groups) ->
