@@ -26,10 +26,10 @@ update msg model =
         DeleteFlashElement id time ->
             Actions.deleteFlashElement model id time
 
-        ProcessTicketRequest (Ok tickets) ->
-            Actions.processValidTicketRequest model tickets
+        ProcessTicketGet (Ok tickets) ->
+            Actions.processValidTicketGet model tickets
 
-        ProcessTicketRequest (Err error) ->
+        ProcessTicketGet (Err error) ->
             Actions.processError model error
 
         ProcessUserGet (Ok users) ->
@@ -44,10 +44,10 @@ update msg model =
         ProcessUserPost (Err error) ->
             Actions.processUserPostError model error
 
-        ProcessGroupRequest (Ok groups) ->
-            Actions.processValidGroupRequest model groups
+        ProcessGroupGet (Ok groups) ->
+            Actions.processValidGroupGet model groups
 
-        ProcessGroupRequest (Err error) ->
+        ProcessGroupGet (Err error) ->
             Actions.processError model error
 
         PhoenixMsg msg ->

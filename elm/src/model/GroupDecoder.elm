@@ -31,4 +31,4 @@ get =
         url =
             Constants.urlBase ++ "/api/v1/groups"
     in
-        Http.send ProcessGroupRequest (Http.get url listDecoder)
+        Http.send ProcessGroupGet (Http.get url listDecoder)

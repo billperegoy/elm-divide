@@ -82,8 +82,8 @@ deleteFlashElement model id time =
         { model | flashElements = newList } ! []
 
 
-processValidTicketRequest : Model -> List Ticket -> ( Model, Cmd Msg )
-processValidTicketRequest model tickets =
+processValidTicketGet : Model -> List Ticket -> ( Model, Cmd Msg )
+processValidTicketGet model tickets =
     { model | tickets = tickets } ! []
 
 
@@ -100,8 +100,8 @@ processValidUserPost model user =
     model ! []
 
 
-processValidGroupRequest : Model -> List Group -> ( Model, Cmd Msg )
-processValidGroupRequest model groups =
+processValidGroupGet : Model -> List Group -> ( Model, Cmd Msg )
+processValidGroupGet model groups =
     let
         activeUser =
             List.filter (\group -> group.name == model.groupName) groups

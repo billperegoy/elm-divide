@@ -36,10 +36,10 @@ type Msg
     | UpdateUserInputField String
     | CreateUser
     | LoginUser
-    | ProcessTicketRequest (Result Http.Error (List Ticket))
+    | ProcessTicketGet (Result Http.Error (List Ticket))
     | ProcessUserGet (Result Http.Error (List User))
     | ProcessUserPost (Result Http.Error User)
-    | ProcessGroupRequest (Result Http.Error (List Group))
+    | ProcessGroupGet (Result Http.Error (List Group))
     | PhoenixMsg (Phoenix.Socket.Msg Msg)
     | JoinChannel
     | SendMessage Int Int String

@@ -24,7 +24,7 @@ get =
         url =
             Constants.urlBase ++ "/api/v1/tickets"
     in
-        Http.send ProcessTicketRequest (Http.get url listDecoder)
+        Http.send ProcessTicketGet (Http.get url listDecoder)
 
 
 listDecoder : Json.Decode.Decoder (List Ticket)
