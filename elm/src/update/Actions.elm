@@ -123,6 +123,15 @@ processError model error =
         { model | systemError = errorString } ! []
 
 
+processUserPostError : Model -> Http.Error -> ( Model, Cmd Msg )
+processUserPostError model error =
+    let
+        errorString =
+            "Duplicate User Name. Try Again."
+    in
+        { model | systemError = errorString } ! []
+
+
 phoenixMsg : Model -> Phoenix.Socket.Msg Msg -> ( Model, Cmd Msg )
 phoenixMsg model msg =
     let

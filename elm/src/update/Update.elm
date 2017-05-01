@@ -42,7 +42,7 @@ update msg model =
             Actions.processValidUserPost model user
 
         ProcessUserPost (Err error) ->
-            Actions.processError model error
+            Actions.processUserPostError model error
 
         ProcessGroupRequest (Ok groups) ->
             Actions.processValidGroupRequest model groups
