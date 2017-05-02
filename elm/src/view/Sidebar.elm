@@ -9,7 +9,7 @@ import View.Flash as Flash
 
 view : Model -> Html Msg
 view model =
-    div [ class "col-md-2" ]
+    div [ class "col-md-4" ]
         [ Login.view model
         , Flash.view model
         ]
