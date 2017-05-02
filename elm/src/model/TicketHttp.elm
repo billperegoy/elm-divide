@@ -1,4 +1,4 @@
-module TicketDecoder
+module Ticket.Http
     exposing
         ( get
         , decoder

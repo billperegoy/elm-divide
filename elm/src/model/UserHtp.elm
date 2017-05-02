@@ -1,4 +1,4 @@
-module UserDecoder exposing (get, post)
+module User.Http exposing (get, post)
 
 import Http
 import Json.Decode

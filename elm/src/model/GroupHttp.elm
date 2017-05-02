@@ -1,4 +1,4 @@
-module GroupDecoder exposing (get)
+module Group.Http exposing (get)
 
 import Http
 import Json.Decode

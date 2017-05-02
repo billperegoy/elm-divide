@@ -5,9 +5,9 @@ import Model exposing (..)
 import Subscriptions
 import Update
 import View
-import TicketDecoder
-import UserDecoder
-import GroupDecoder
+import Ticket.Http
+import User.Http
+import Group.Http
 import Utils
 
 
@@ -16,9 +16,9 @@ main =
     Html.program
         { init =
             Model.init
-                ! [ TicketDecoder.get
-                  , UserDecoder.get
-                  , GroupDecoder.get
+                ! [ Ticket.Http.get
+                  , User.Http.get
+                  , Group.Http.get
                   , Utils.joinChannel
                   ]
         , view = View.view

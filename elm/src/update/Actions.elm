@@ -16,8 +16,8 @@ import Model exposing (..)
 import Ticket exposing (..)
 import User exposing (..)
 import Group exposing (..)
-import TicketDecoder
-import UserDecoder
+import Ticket.Http
+import User.Http
 import ActiveUserDecoder
 import Constants
 import Ticket.Utils
@@ -34,7 +34,7 @@ createUser model =
     { model
         | systemError = ""
     }
-        ! [ UserDecoder.post model.userInputField ]
+        ! [ User.Http.post model.userInputField ]
 
 
 loginUser : Model -> ( Model, Cmd Msg )
@@ -183,7 +183,7 @@ receiveTicketMessage : Model -> Encode.Value -> ( Model, Cmd Msg )
 receiveTicketMessage model message =
     let
         ticket =
-            TicketDecoder.fromEncodeValue message
+            Ticket.Http.fromEncodeValue message
 
         newTickets =
             Ticket.Utils.update ticket model.tickets
