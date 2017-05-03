@@ -19,7 +19,7 @@ type alias Model =
     { groupName : String
     , tickets : List Ticket
     , flashElements : List FlashElement.FlashElement
-    , nextId : Int
+    , nextFlashId : Int
     , users : List User
     , currentUser : Int
     , myUserId : Int
@@ -52,7 +52,7 @@ init =
     { groupName = "My Group"
     , tickets = []
     , flashElements = []
-    , nextId = 0
+    , nextFlashId = 0
     , users = []
     , currentUser = 0
     , myUserId = -1

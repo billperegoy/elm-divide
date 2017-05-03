@@ -52,7 +52,7 @@ createFlashElementAction : Model -> String -> String -> Time.Time -> ( Model, Cm
 createFlashElementAction model text color duration =
     let
         newFlashElement =
-            { id = model.nextId
+            { id = model.nextFlashId
             , text = text
             , color = color
             , duration = duration
@@ -63,10 +63,10 @@ createFlashElementAction model text color duration =
     in
         { model
             | flashElements = newList
-            , nextId = model.nextId + 1
+            , nextFlashId = model.nextFlashId + 1
         }
             ! [ deleteCmd
-                    model.nextId
+                    model.nextFlashId
                     newFlashElement.duration
               ]
 
