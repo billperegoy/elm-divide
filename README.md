@@ -10,19 +10,18 @@ To use this repository, you should follow these steps.
 
 3. mix deps.get
 
-3. npm install
+4. npm install
 
-4. mix ecto.create
+5. mix ecto.create
 
-5. mix ecto.migrate
+6. mix ecto.migrate
 
-6. mix run priv/repo/seeds.exs
+7. mix run priv/repo/seeds.exs
 
-7. cd elm
+8. mix phoenix.server
+
+9. Navigate to localhost:4000
  
-8. npm install
-
-9. npm run watch
 
 
 
