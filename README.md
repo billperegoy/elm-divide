@@ -8,6 +8,8 @@ To use this repository, you should follow these steps.
 
 2. npm install -g elm-live
 
+3. mix deps.get
+
 3. npm install
 
 4. mix ecto.create

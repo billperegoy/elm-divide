@@ -62,7 +62,7 @@ exports.config = {
       mainModules: ['src/Main.elm', 'src/*/*.elm'],
       outputFolder: '../priv/static/js',
       outputFile: 'bundle.js',
-      makeParameters: ['--warn']
+      makeParameters: ['--warn --debug']
     }
   },
 
